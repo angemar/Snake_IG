@@ -13,7 +13,7 @@ function configureSnakeTail (radius, height, slices, texture) {
     var texCoords = [];
     
     var bottom = -height / 2.0, top = height / 2.0;
-    var vertex = vec4 (0.0, radius, bottom, 1.0);
+    var vertex = vec4 (0.0, radius * 1.5, bottom, 1.0);
     for (var i = 0; i < slices; i++) {
         var angle = i * 2.0 * Math.PI / slices;
         var nextAngle = (i + 1) * 2.0 * Math.PI / slices;
