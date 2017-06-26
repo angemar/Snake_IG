@@ -2,7 +2,7 @@
 
 var gl, program;
 
-var objects = {'body' : [], 'tail' : [], 'head' : [], 'world' : []};
+var objects = {'body' : [], 'tail' : [], 'head' : [], 'bonus' : [], 'world' : []};
 var objKeys = [];
 
 var vBuffer, nBuffer, tBuffer;
@@ -43,6 +43,8 @@ var keysKeys = Object.keys(keys);
 var modelMatLoc, modelNormMatLoc, viewMatLoc, viewNormMatLoc, projMatLoc;
 var dirLightDirLoc, posLightPosLoc, spotLightPosLoc, spotLightDirLoc;
 
+var angle=0;
+
 function loadTexture (texture, image) {
     gl.bindTexture(gl.TEXTURE_2D, texture);
     gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
@@ -76,6 +78,11 @@ window.onload = function () {
     headImage.onload = function () { loadTexture (headTex, headImage); };
     headImage.src = 'eyed_cable_512.jpg';
     
+    var bonusTex = gl.createTexture();
+    var bonusImage = new Image ();
+    bonusImage.onload = function () { loadTexture (bonusTex, bonusImage); };
+    bonusImage.src = 'bonus_1024.jpg';
+    
     var worldTex = gl.createTexture();
     var worldImage = new Image ();
     worldImage.onload = function () { loadTexture (worldTex, worldImage); };
@@ -90,6 +97,9 @@ window.onload = function () {
     
     configureSnakeTail (0.25, 0.5, 360, snakeBodyTex);
     objects['tail'].push (new SnakeTail (0.0, -0.75));
+    
+    configureBonus (0.23, 90, bonusTex);
+    objects['bonus'].push (new Bonus (0.0, 3.0));
     
     configureWorld (100, 100, 50, worldTex);
     objects['world'].push (new World (0.0, 0.0));
@@ -128,6 +138,8 @@ window.onload = function () {
 };
 
 var render = function () {
+    angle=angle+2;
+    
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
     
     move (keys, keysKeys);
@@ -160,8 +172,12 @@ var render = function () {
         
         for (var j = 0; j < objects[objKeys[i]].length; j++) {
             var obj = objects[objKeys[i]][j];
-            gl.uniformMatrix4fv(modelMatLoc, false, flatten (obj.modelMat));
-            gl.uniformMatrix4fv(modelNormMatLoc, false, flatten (obj.modelNormMat));
+            if(objKeys[i] == 'bonus'){
+                obj.modelMat = mult(obj.modelMat, rotateY(angle));
+                obj.modelNormMat = flatten (normalMatrix(obj.modelMat, false));
+            }
+            gl.uniformMatrix4fv(modelMatLoc, false, flatten(obj.modelMat));
+            gl.uniformMatrix4fv(modelNormMatLoc, false, flatten(obj.modelNormMat));
             gl.drawArrays(gl.TRIANGLES, 0, proto.vertices().length);
         }
     }
