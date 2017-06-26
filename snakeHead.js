@@ -1,9 +1,8 @@
 function SnakeHead (tranX, tranZ) {
-    var modelMat = translate(tranX, SnakeHead.radius / 2, tranZ);
-    this.modelMat = flatten (modelMat);
-    this.modelNormMat = flatten (normalMatrix(modelMat, false));
+    this.modelMat = translate(tranX, SnakeHead.radius / 2, tranZ);
+    this.modelNormMat = normalMatrix(this.modelMat, false);
 
-    var obst = mult(modelMat, vec4(0.0, 0.0, 0.0, 1.0));
+    var obst = mult(this.modelMat, vec4(0.0, 0.0, 0.0, 1.0));
     this.obstacle = vec3(obst[0], obst[1], obst[2]);
 }
 
@@ -97,40 +96,3 @@ function configureSnakeHead (radius, slices, texture) {
             return vec3(0.0, 0.0, 0.0);
     };
 }
-
-/*
-function initBuffers() {
-        var latitudeBands = 30;
-        var longitudeBands = 30;
-        var radius = 2;
-
-        var vertexPositionData = [];
-        var normalData = [];
-        var textureCoordData = [];
-        for (var latNumber=0; latNumber <= latitudeBands; latNumber++) {
-            var theta = latNumber * Math.PI / latitudeBands;
-            var sinTheta = Math.sin(theta);
-            var cosTheta = Math.cos(theta);
-
-            for (var longNumber=0; longNumber <= longitudeBands; longNumber++) {
-                var phi = longNumber * 2 * Math.PI / longitudeBands;
-                var sinPhi = Math.sin(phi);
-                var cosPhi = Math.cos(phi);
-
-                var x = cosPhi * sinTheta;
-                var y = cosTheta;
-                var z = sinPhi * sinTheta;
-                var u = 1 - (longNumber / longitudeBands);
-                var v = 1 - (latNumber / latitudeBands);
-
-                normalData.push(x);
-                normalData.push(y);
-                normalData.push(z);
-                textureCoordData.push(u);
-                textureCoordData.push(v);
-                vertexPositionData.push(radius * x);
-                vertexPositionData.push(radius * y);
-                vertexPositionData.push(radius * z);
-            }
-        }
- */

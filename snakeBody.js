@@ -1,9 +1,8 @@
 function SnakeBody (tranX, tranZ) {
-    var modelMat = translate(tranX, SnakeBody.radius / 2, tranZ);
-    this.modelMat = flatten (modelMat);
-    this.modelNormMat = flatten (normalMatrix(modelMat, false));
+    this.modelMat = translate(tranX, SnakeBody.radius / 2, tranZ);
+    this.modelNormMat = normalMatrix(this.modelMat, false);
 
-    var obst = mult(modelMat, vec4(0.0, 0.0, 0.0, 1.0));
+    var obst = mult(this.modelMat, vec4(0.0, 0.0, 0.0, 1.0));
     this.obstacle = vec3(obst[0], obst[1], obst[2]);
 }
 

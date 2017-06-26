@@ -160,8 +160,8 @@ var render = function () {
         
         for (var j = 0; j < objects[objKeys[i]].length; j++) {
             var obj = objects[objKeys[i]][j];
-            gl.uniformMatrix4fv(modelMatLoc, false, obj.modelMat);
-            gl.uniformMatrix4fv(modelNormMatLoc, false, obj.modelNormMat);
+            gl.uniformMatrix4fv(modelMatLoc, false, flatten (obj.modelMat));
+            gl.uniformMatrix4fv(modelNormMatLoc, false, flatten (obj.modelNormMat));
             gl.drawArrays(gl.TRIANGLES, 0, proto.vertices().length);
         }
     }
