@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>SNAKE Project</title>
+        <script id="vertex-shader" type="x-shader/x-vertex">
+
+        attribute vec4 vPosition, vNormal;
+        attribute vec2 vTexCoord;
+
+        uniform mat4 modelMat, modelNormMat, viewMat, viewNormMat, projMat;
+        uniform vec4 dirLightDirection, posLightPosition, spotLightPosition;
+        uniform vec4 spotLightDirection;
+
+        varying vec3 P, N, dirDir, posPos, spotPos, spotDir;
+        varying vec2 texCoord;
+
+        void main() {
+            P = (viewMat * modelMat * vPosition).xyz;
+            N = normalize((viewNormMat * modelNormMat * vNormal).xyz);
+            dirDir = dirLightDirection.xyz;
+            posPos = posLightPosition.xyz;
+            spotPos = spotLightPosition.xyz;
+            spotDir = spotLightDirection.xyz;
+            texCoord = vTexCoord;
+            
+            gl_Position = projMat * viewMat * modelMat * vPosition;
+        }
+        </script>
+
+        <script id="fragment-shader" type="x-shader/x-fragment">
+
+        precision mediump float;
+
+        varying vec3 P, N, dirDir, posPos, spotPos, spotDir;
+        varying vec2 texCoord;
+        
+        uniform vec4 ambientProduct, diffuseProduct, specularProduct;
+        uniform float dirLightOn, posLightOn, spotLightOn, texOn, colorOn;
+        uniform float shininess, spotCutoff;
+        uniform vec3 posAtt, spotAtt;
+        uniform sampler2D tex;
+
+        void main() {
+            float dist = distance(posPos, P);
+            float linAtt = posAtt.y * dist;
+            float quadAtt = posAtt.z * dist * dist;
+            float posTotalAttenuation = posAtt.x + linAtt + quadAtt;
+
+            dist = distance(spotPos, P);
+            linAtt = spotAtt.y * dist;
+            quadAtt = spotAtt.z * dist * dist;
+            float spotTotalAttenuation = spotAtt.x + linAtt + quadAtt;
+
+            vec3 spotL = normalize(spotPos - P);
+            float spotCutoffCos = cos(radians(spotCutoff));
+            float spotAngleCos = dot(normalize(spotDir), spotL);
+
+            float Kd, Ks;
+            vec4 ambient = ambientProduct, diffuse, specular;
+            vec4 dir = vec4(0.0, 0.0, 0.0, 0.0);
+            vec4 pos = vec4(0.0, 0.0, 0.0, 0.0);
+            vec4 spot = vec4(0.0, 0.0, 0.0, 0.0);
+            if (dirLightOn != 0.0){
+                vec3 dirL = normalize(dirDir);
+                vec3 dirH = normalize(dirL + normalize (-P));
+                Kd = max(dot(dirL, N), 0.0);
+                diffuse = Kd * diffuseProduct;
+                Ks = pow(max(dot(N, dirH), 0.0), shininess);
+                specular = Ks * specularProduct;
+                if(dot(dirL, N) < 0.0) specular = vec4(0.0, 0.0, 0.0, 1.0);
+                dir = ambient + diffuse + specular;
+            }
+            if (posLightOn != 0.0){
+                vec3 posL = normalize(posPos - P);
+                vec3 posH = normalize(posL + normalize (-P));
+                Kd = max(dot(posL, N), 0.0);
+                diffuse = Kd * diffuseProduct / posTotalAttenuation;
+                Ks = pow(max(dot(N, posH), 0.0), shininess);
+                specular = Ks * specularProduct / posTotalAttenuation;
+                if(dot(posL, N) < 0.0) specular = vec4(0.0, 0.0, 0.0, 1.0);
+                pos = ambient + diffuse + specular;
+            }
+            if (spotLightOn != 0.0 && spotAngleCos > spotCutoffCos){
+                vec3 spotH = normalize(spotL + normalize (-P));
+                Kd = max(dot(spotL, N), 0.0);
+                diffuse = Kd * diffuseProduct / spotTotalAttenuation;
+                Ks = pow(max(dot(N, spotH), 0.0), shininess);
+                specular = Ks * specularProduct / spotTotalAttenuation;
+                if(dot(spotL, N) < 0.0) specular = vec4(0.0, 0.0, 0.0, 1.0);
+                float spotDif = 1.0 - spotCutoffCos;
+                float spotFactor = clamp((spotAngleCos - spotCutoffCos) / spotDif, 0.0, 1.0);
+                spot = ambient + (diffuse + specular) * spotFactor;
+            }
+            gl_FragColor = dir + pos + spot;
+            if (texOn != 0.0) gl_FragColor *= texture2D(tex, texCoord);
+            gl_FragColor.a = 1.0;
+        }
+        </script>
+
+        <script type="text/javascript" src="Common/webgl-utils.js"></script>
+        <script type="text/javascript" src="Common/initShaders.js"></script>
+        <script type="text/javascript" src="Common/MV.js"></script>
+        <script type="text/javascript" src="main.js"></script>
+        <script type="text/javascript" src="snakeHead.js"></script>
+        <script type="text/javascript" src="snakeBody.js"></script>
+        <script type="text/javascript" src="snakeTail.js"></script>
+        <script type="text/javascript" src="world.js"></script>
+        <script type="text/javascript" src="light.js"></script>
+        <script type="text/javascript" src="buttons.js"></script>
+        <script type="text/javascript" src="movement.js"></script>
+    </head>
+    <body>
+        <div>
+            <button id = "ButtonDir">Dir Light on/off</button>
+            <button id = "ButtonPos">Pos Light on/off</button>
+            <button id = "ButtonSpot">Spot Light on/off</button>
+            <button id="ButtonTex">Texture on/off</button>
+        </div>
+        <canvas id="gl-canvas" width="800" height="600">
+            Oops ... your browser doesn't support the HTML5 canvas element
+        </canvas>
+    </body>
+</html>
