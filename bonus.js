@@ -6,7 +6,7 @@ function Bonus (tranX, tranZ) {
     this.obstacle = vec3(obst[0], obst[1], obst[2]);
 }
 
-function configureBonus (radius, slices, texture) {
+function configureBonus (radius, slices, texture, rotAngle) {
     var vertices = [];
     var normals = [];
     var texCoords = [];
@@ -52,9 +52,9 @@ function configureBonus (radius, slices, texture) {
             normals.push (norm);
             normals.push (norm);
             
-            texCoords.push(nextAngle1 / (Math.PI), nextAngle2 / (Math.PI / 2));
-            texCoords.push(nextAngle1 / (Math.PI), angle2 / (Math.PI / 2));
-            texCoords.push(angle1 / (Math.PI), angle2 / (Math.PI / 2));
+            texCoords.push((nextAngle1 + Math.PI / 2) / (2 * Math.PI), (nextAngle2 + Math.PI / 2) / Math.PI);
+            texCoords.push((nextAngle1 + Math.PI / 2) / (2 * Math.PI), (angle2 + Math.PI / 2) / Math.PI);
+            texCoords.push((angle1 + Math.PI / 2) / (2 * Math.PI), (angle2 + Math.PI / 2) / Math.PI);
             
             vertices.push (upLeft);
             vertices.push (downRight);
@@ -67,16 +67,16 @@ function configureBonus (radius, slices, texture) {
             normals.push (norm);
             normals.push (norm);
             
-            texCoords.push(nextAngle1 / (Math.PI), nextAngle2 / (Math.PI / 2));
-            texCoords.push(angle1 / (Math.PI), angle2 / (Math.PI / 2));
-            texCoords.push(angle1 / (Math.PI), nextAngle2 / (Math.PI / 2));
+            texCoords.push((nextAngle1 + Math.PI / 2) / (2 * Math.PI), (nextAngle2 + Math.PI / 2) / Math.PI);
+            texCoords.push((angle1 + Math.PI / 2) / (2 * Math.PI), (angle2 + Math.PI / 2) / Math.PI / 2);
+            texCoords.push((angle1 + Math.PI / 2) / (2 * Math.PI), (nextAngle2 + Math.PI / 2) / Math.PI / 2);
         }
     }
-    
     
     Bonus.radius = radius;
     Bonus.slices = slices;
     Bonus.texture = texture;
+    Bonus.rotAngle = rotAngle;
 
     Bonus.vertices = vertices;
     Bonus.normals = normals;

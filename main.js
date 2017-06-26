@@ -43,8 +43,6 @@ var keysKeys = Object.keys(keys);
 var modelMatLoc, modelNormMatLoc, viewMatLoc, viewNormMatLoc, projMatLoc;
 var dirLightDirLoc, posLightPosLoc, spotLightPosLoc, spotLightDirLoc;
 
-var angle=0;
-
 function loadTexture (texture, image) {
     gl.bindTexture(gl.TEXTURE_2D, texture);
     gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
@@ -88,17 +86,17 @@ window.onload = function () {
     worldImage.onload = function () { loadTexture (worldTex, worldImage); };
     worldImage.src = 'circuit.jpg';
     
-    configureSnakeHead (0.3, 90, headTex);
+    configureSnakeHead (0.3, 60, headTex);
     objects['head'].push (new SnakeHead (0.0, 1.65));
     
-    configureSnakeBody (0.25, 1.0, 360, snakeBodyTex);
+    configureSnakeBody (0.25, 1.0, 120, snakeBodyTex);
     objects['body'].push (new SnakeBody (0.0, 1.0));
     objects['body'].push (new SnakeBody (0.0, 0.0));
     
-    configureSnakeTail (0.25, 0.5, 360, snakeBodyTex);
+    configureSnakeTail (0.25, 0.5, 120, snakeBodyTex);
     objects['tail'].push (new SnakeTail (0.0, -0.75));
     
-    configureBonus (0.23, 90, bonusTex);
+    configureBonus (0.23, 60, bonusTex, 2);
     objects['bonus'].push (new Bonus (0.0, 3.0));
     
     configureWorld (100, 100, 50, worldTex);
@@ -138,7 +136,7 @@ window.onload = function () {
 };
 
 var render = function () {
-    angle=angle+2;
+    //angle=angle+2;
     
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
     
@@ -172,10 +170,10 @@ var render = function () {
         
         for (var j = 0; j < objects[objKeys[i]].length; j++) {
             var obj = objects[objKeys[i]][j];
-            if(objKeys[i] == 'bonus'){
-                obj.modelMat = mult(obj.modelMat, rotateY(angle));
-                obj.modelNormMat = flatten (normalMatrix(obj.modelMat, false));
-            }
+            /*if(objKeys[i] == 'bonus'){
+                obj.modelMat = mult(obj.modelMat, rotateY(Bonus.rotAngle));
+                obj.modelNormMat = normalMatrix(obj.modelMat, false);
+            }*/
             gl.uniformMatrix4fv(modelMatLoc, false, flatten(obj.modelMat));
             gl.uniformMatrix4fv(modelNormMatLoc, false, flatten(obj.modelNormMat));
             gl.drawArrays(gl.TRIANGLES, 0, proto.vertices().length);
