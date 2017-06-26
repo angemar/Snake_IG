@@ -52,9 +52,12 @@ function configureBonus (radius, slices, texture, rotAngle) {
             normals.push (norm);
             normals.push (norm);
             
-            texCoords.push((nextAngle1 + Math.PI / 2) / (2 * Math.PI), (nextAngle2 + Math.PI / 2) / Math.PI);
-            texCoords.push((nextAngle1 + Math.PI / 2) / (2 * Math.PI), (angle2 + Math.PI / 2) / Math.PI);
-            texCoords.push((angle1 + Math.PI / 2) / (2 * Math.PI), (angle2 + Math.PI / 2) / Math.PI);
+            texCoords.push((nextAngle1 + Math.PI / 2) / (2 * Math.PI),
+                           (nextAngle2 + Math.PI / 2) / Math.PI);
+            texCoords.push((nextAngle1 + Math.PI / 2) / (2 * Math.PI),
+                           (angle2 + Math.PI / 2) / Math.PI);
+            texCoords.push((angle1 + Math.PI / 2) / (2 * Math.PI),
+                           (angle2 + Math.PI / 2) / Math.PI);
             
             vertices.push (upLeft);
             vertices.push (downRight);
@@ -67,16 +70,19 @@ function configureBonus (radius, slices, texture, rotAngle) {
             normals.push (norm);
             normals.push (norm);
             
-            texCoords.push((nextAngle1 + Math.PI / 2) / (2 * Math.PI), (nextAngle2 + Math.PI / 2) / Math.PI);
-            texCoords.push((angle1 + Math.PI / 2) / (2 * Math.PI), (angle2 + Math.PI / 2) / Math.PI / 2);
-            texCoords.push((angle1 + Math.PI / 2) / (2 * Math.PI), (nextAngle2 + Math.PI / 2) / Math.PI / 2);
+            texCoords.push((nextAngle1 + Math.PI / 2) / (2 * Math.PI),
+                           (nextAngle2 + Math.PI / 2) / Math.PI);
+            texCoords.push((angle1 + Math.PI / 2) / (2 * Math.PI),
+                           (angle2 + Math.PI / 2) / Math.PI);
+            texCoords.push((angle1 + Math.PI / 2) / (2 * Math.PI),
+                           (nextAngle2 + Math.PI / 2) / Math.PI);
         }
     }
     
     Bonus.radius = radius;
     Bonus.slices = slices;
     Bonus.texture = texture;
-    Bonus.rotAngle = rotAngle;
+    Bonus.rotMat = rotate (rotAngle, 1.0, 1.0, 0.0);
 
     Bonus.vertices = vertices;
     Bonus.normals = normals;

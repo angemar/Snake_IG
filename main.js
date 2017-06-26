@@ -170,10 +170,10 @@ var render = function () {
         
         for (var j = 0; j < objects[objKeys[i]].length; j++) {
             var obj = objects[objKeys[i]][j];
-            /*if(objKeys[i] == 'bonus'){
-                obj.modelMat = mult(obj.modelMat, rotateY(Bonus.rotAngle));
+            if(objKeys[i] === 'bonus'){
+                obj.modelMat = mult(obj.modelMat, Bonus.rotMat);
                 obj.modelNormMat = normalMatrix(obj.modelMat, false);
-            }*/
+            }
             gl.uniformMatrix4fv(modelMatLoc, false, flatten(obj.modelMat));
             gl.uniformMatrix4fv(modelNormMatLoc, false, flatten(obj.modelNormMat));
             gl.drawArrays(gl.TRIANGLES, 0, proto.vertices().length);
