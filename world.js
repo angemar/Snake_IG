@@ -1,6 +1,6 @@
 function World (tranX, tranZ) {
-    this.modelMat = translate(tranX, 0.0, tranZ);
-    this.modelNormMat = normalMatrix(this.modelMat, false);
+    this.model = translate(tranX, 0.0, tranZ);
+    this.modelNorm = normalMatrix(this.model, false);
 }
 
 function configureWorld (width, height, slices, texture) {

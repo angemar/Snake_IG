@@ -76,10 +76,8 @@ function move(keys, keysKeys) {
     newAt[1] = Math.sin (pitch);
     newAt[2] = Math.cos (pitch) * Math.cos (yaw);
     for (var i = 0; i < 3; i++) at[i] = eye[i] + newAt[i];
-    for (var i = 0; i < 3; i++) spotLightPosition[i] = eye[i];
-    for (var i = 0; i < 3; i++) spotLightDirection[i] = -newAt[i];
-    viewMat = lookAt(eye, at, up);
-    viewNormMat = normalMatrix (viewMat, false);
-    gl.uniformMatrix4fv(viewMatLoc, false, flatten(viewMat));
-    gl.uniformMatrix4fv(viewNormMatLoc, false, flatten(viewNormMat));
+    for (var i = 0; i < 3; i++) spotPosition[i] = eye[i];
+    for (var i = 0; i < 3; i++) spotDirection[i] = -newAt[i];
+    view = lookAt(eye, at, up);
+    viewNorm = normalMatrix (view, false);
 }

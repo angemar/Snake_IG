@@ -1,22 +1,22 @@
 function configureButtons(document, gl, program) {
-    var dirLightOnLoc = gl.getUniformLocation(program, "dirLightOn");
-    var posLightOnLoc = gl.getUniformLocation(program, "posLightOn");
-    var spotLightOnLoc = gl.getUniformLocation(program, "spotLightOn");
+    var dirOnLoc = gl.getUniformLocation(program, "dirOn");
+    var posOnLoc = gl.getUniformLocation(program, "posOn");
+    var spotOnLoc = gl.getUniformLocation(program, "spotOn");
     var texOnLoc = gl.getUniformLocation(program, "texOn");
 
     document.getElementById("ButtonDir").onclick = function () {
-        var flag = gl.getUniform(program, dirLightOnLoc);
-        gl.uniform1f(dirLightOnLoc, !flag);
+        var flag = gl.getUniform(program, dirOnLoc);
+        gl.uniform1f(dirOnLoc, !flag);
     };
 
     document.getElementById("ButtonPos").onclick = function () {
-        var flag = gl.getUniform(program, posLightOnLoc);
-        gl.uniform1f(posLightOnLoc, !flag);
+        var flag = gl.getUniform(program, posOnLoc);
+        gl.uniform1f(posOnLoc, !flag);
     };
 
     document.getElementById("ButtonSpot").onclick = function () {
-        var flag = gl.getUniform(program, spotLightOnLoc);
-        gl.uniform1f(spotLightOnLoc, !flag);
+        var flag = gl.getUniform(program, spotOnLoc);
+        gl.uniform1f(spotOnLoc, !flag);
     };
 
     document.getElementById("ButtonTex").onclick = function () {
@@ -30,9 +30,9 @@ function configureButtons(document, gl, program) {
         keys[e.keyCode] = e.type == 'keydown';
     };
 
-    gl.uniform1f(dirLightOnLoc, 1.0);
-    gl.uniform1f(posLightOnLoc, 1.0);
-    gl.uniform1f(spotLightOnLoc, 1.0);
+    gl.uniform1f(dirOnLoc, 1.0);
+    gl.uniform1f(posOnLoc, 1.0);
+    gl.uniform1f(spotOnLoc, 1.0);
 
     gl.uniform1f(texOnLoc, 1.0);
 }

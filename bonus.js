@@ -1,8 +1,8 @@
 function Bonus (tranX, tranZ) {
-    this.modelMat = translate(tranX, Bonus.radius, tranZ);
-    this.modelNormMat = normalMatrix(this.modelMat, false);
+    this.model = translate(tranX, Bonus.radius, tranZ);
+    this.modelNorm = normalMatrix(this.model, false);
 
-    var obst = mult(this.modelMat, vec4(0.0, 0.0, 0.0, 1.0));
+    var obst = mult(this.model, vec4(0.0, 0.0, 0.0, 1.0));
     this.obstacle = vec3(obst[0], obst[1], obst[2]);
 }
 

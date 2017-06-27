@@ -2,99 +2,211 @@
 <html>
     <head>
         <title>SNAKE Project</title>
-        <script id="vertex-shader" type="x-shader/x-vertex">
+        <style>
+            * { margin: 0;
+                padding: 0;
+            }
 
-        attribute vec4 vPosition, vNormal;
-        attribute vec2 vTexCoord;
-
-        uniform mat4 modelMat, modelNormMat, viewMat, viewNormMat, projMat;
-        uniform vec4 dirLightDirection, posLightPosition, spotLightPosition;
-        uniform vec4 spotLightDirection;
-
-        varying vec3 P, N, dirDir, posPos, spotPos, spotDir;
-        varying vec2 texCoord;
-
-        void main() {
-            P = (viewMat * modelMat * vPosition).xyz;
-            N = normalize((viewNormMat * modelNormMat * vNormal).xyz);
-            dirDir = dirLightDirection.xyz;
-            posPos = posLightPosition.xyz;
-            spotPos = spotLightPosition.xyz;
-            spotDir = spotLightDirection.xyz;
-            texCoord = vTexCoord;
+            body, html {
+                height: 100%;
+            }
             
-            gl_Position = projMat * viewMat * modelMat * vPosition;
-        }
+            #container {
+                position: relative;
+                height: 100%;
+                width: 100%;
+            }
+
+            #gl-canvas {
+                width: 100%;
+                height: 100%;
+            }
+            
+            #buttons {
+                top: 0;
+                left: 0;
+                width: 100%;
+                position: absolute;
+            }
+            
+        </style>
+        <script id="vertex-shader" type="x-shader/x-vertex">
+            attribute vec4 vPosition, vNormal;
+            attribute vec2 vTexCoord;
+
+            uniform mat4 model, modelNorm, view, viewNorm, proj;
+            uniform vec4 posPosition, spotPosition, dirDirection, spotDirection;
+            uniform vec4 ambientProduct, diffuseProduct, specularProduct;
+            uniform float dirOn, posOn, spotOn, texOn;
+            uniform float shininess, spotCutoffAngle, eyeDist;
+            uniform vec3 posAtt, spotAtt;
+
+            varying vec3 P, N, dirDir, posPos, spotPos, spotDir;
+            varying vec4 ambProd, diffProd, specProd;
+            varying vec4 directional, positional, spotlight;
+            varying float fDirOn, fPosOn, fSpotOn, fTexOn, dist, shin, spotCutoff;
+            varying vec3 fPosAtt, fSpotAtt;
+            varying vec2 texCoord;
+
+            void main() {
+                P = (view * model * vPosition).xyz;
+                N = normalize((viewNorm * modelNorm * vNormal).xyz);
+                dirDir = dirDirection.xyz;
+                posPos = posPosition.xyz;
+                spotPos = spotPosition.xyz;
+                spotDir = spotDirection.xyz;
+                
+                ambProd = ambientProduct;
+                diffProd = diffuseProduct;
+                specProd = specularProduct;
+
+                directional = vec4(0.0, 0.0, 0.0, 0.0);
+                positional = vec4(0.0, 0.0, 0.0, 0.0);
+                spotlight = vec4(0.0, 0.0, 0.0, 0.0);
+
+                fDirOn = dirOn;
+                fPosOn = posOn;
+                fSpotOn = spotOn;
+                fTexOn = texOn;
+                dist = eyeDist;
+                shin = shininess;
+                spotCutoff = spotCutoffAngle;
+                
+                fPosAtt = posAtt;
+                fSpotAtt = spotAtt;
+
+                texCoord = vTexCoord;
+
+                gl_Position = proj * view * model * vPosition;
+                
+
+                if (dist > 15.0) {
+                    float Kd, Ks;
+                    
+                    float posDist = distance(posPos, P);
+                    float linAtt = posAtt.y * posDist;
+                    float quadAtt = posAtt.z * posDist * posDist;
+                    float posTotAtt = posAtt.x + linAtt + quadAtt;
+
+                    float spotDist = distance(spotPos, P);
+                    linAtt = spotAtt.y * spotDist;
+                    quadAtt = spotAtt.z * spotDist * spotDist;
+                    float spotTotAtt = spotAtt.x + linAtt + quadAtt;
+
+                    vec3 spotL = normalize(spotPos - P);
+                    float spotCut = cos(radians(spotCutoff));
+                    float spotCos = dot(normalize(spotDir), spotL);
+                    
+                    vec4 ambient = ambientProduct, diffuse, specular;
+                    
+                    if (dirOn != 0.0){
+                        vec3 dirL = normalize(dirDir);
+                        vec3 dirH = normalize(dirL + normalize (-P));
+                        Kd = max(dot(dirL, N), 0.0);
+                        diffuse = Kd * diffuseProduct;
+                        Ks = pow(max(dot(N, dirH), 0.0), shininess);
+                        specular = Ks * specularProduct;
+                        if(dot(dirL, N) < 0.0) specular = vec4(0.0, 0.0, 0.0, 1.0);
+                        directional = ambient + diffuse + specular;
+                    }
+                    if (posOn != 0.0){
+                        vec3 posL = normalize(posPos - P);
+                        vec3 posH = normalize(posL + normalize (-P));
+                        Kd = max(dot(posL, N), 0.0);
+                        diffuse = Kd * diffuseProduct / posTotAtt;
+                        Ks = pow(max(dot(N, posH), 0.0), shininess);
+                        specular = Ks * specularProduct / posTotAtt;
+                        if(dot(posL, N) < 0.0) specular = vec4(0.0, 0.0, 0.0, 1.0);
+                        positional = ambient + diffuse + specular;
+                    }
+                    if (spotOn != 0.0 && spotCos > spotCut){
+                        vec3 spotH = normalize(spotL + normalize (-P));
+                        Kd = max(dot(spotL, N), 0.0);
+                        diffuse = Kd * diffuseProduct / spotTotAtt;
+                        Ks = pow(max(dot(N, spotH), 0.0), shininess);
+                        specular = Ks * specularProduct / spotTotAtt;
+                        if(dot(spotL, N) < 0.0) specular = vec4(0.0, 0.0, 0.0, 1.0);
+                        float spotDif = 1.0 - spotCut;
+                        float spotFactor = clamp((spotCos - spotCut) / spotDif, 0.0, 1.0);
+                        spotlight = ambient + (diffuse + specular) * spotFactor;
+                    }
+                }
+            }
         </script>
 
         <script id="fragment-shader" type="x-shader/x-fragment">
+            precision mediump float;
 
-        precision mediump float;
+            uniform sampler2D tex;
 
-        varying vec3 P, N, dirDir, posPos, spotPos, spotDir;
-        varying vec2 texCoord;
-        
-        uniform vec4 ambientProduct, diffuseProduct, specularProduct;
-        uniform float dirLightOn, posLightOn, spotLightOn, texOn, colorOn;
-        uniform float shininess, spotCutoff;
-        uniform vec3 posAtt, spotAtt;
-        uniform sampler2D tex;
+            varying vec3 P, N, dirDir, posPos, spotPos, spotDir;
+            varying vec4 ambProd, diffProd, specProd;
+            varying vec4 directional, positional, spotlight;
+            varying float fDirOn, fPosOn, fSpotOn, fTexOn, dist;
+            varying float shin, spotCutoff;
+            varying vec3 fPosAtt, fSpotAtt;
+            varying vec2 texCoord;
 
-        void main() {
-            float dist = distance(posPos, P);
-            float linAtt = posAtt.y * dist;
-            float quadAtt = posAtt.z * dist * dist;
-            float posTotalAttenuation = posAtt.x + linAtt + quadAtt;
+            void main() {
+                vec4 dir = directional;
+                vec4 pos = positional;
+                vec4 spot = spotlight;
+                
+                
+                if (dist <= 15.0) {
+                    float Kd, Ks;
+                    
+                    float posDist = distance(posPos, P);
+                    float linAtt = fPosAtt.y * posDist;
+                    float quadAtt = fPosAtt.z * posDist * posDist;
+                    float posTotAtt = fPosAtt.x + linAtt + quadAtt;
 
-            dist = distance(spotPos, P);
-            linAtt = spotAtt.y * dist;
-            quadAtt = spotAtt.z * dist * dist;
-            float spotTotalAttenuation = spotAtt.x + linAtt + quadAtt;
-
-            vec3 spotL = normalize(spotPos - P);
-            float spotCutoffCos = cos(radians(spotCutoff));
-            float spotAngleCos = dot(normalize(spotDir), spotL);
-
-            float Kd, Ks;
-            vec4 ambient = ambientProduct, diffuse, specular;
-            vec4 dir = vec4(0.0, 0.0, 0.0, 0.0);
-            vec4 pos = vec4(0.0, 0.0, 0.0, 0.0);
-            vec4 spot = vec4(0.0, 0.0, 0.0, 0.0);
-            if (dirLightOn != 0.0){
-                vec3 dirL = normalize(dirDir);
-                vec3 dirH = normalize(dirL + normalize (-P));
-                Kd = max(dot(dirL, N), 0.0);
-                diffuse = Kd * diffuseProduct;
-                Ks = pow(max(dot(N, dirH), 0.0), shininess);
-                specular = Ks * specularProduct;
-                if(dot(dirL, N) < 0.0) specular = vec4(0.0, 0.0, 0.0, 1.0);
-                dir = ambient + diffuse + specular;
+                    float spotDist = distance(spotPos, P);
+                    linAtt = fSpotAtt.y * spotDist;
+                    quadAtt = fSpotAtt.z * spotDist * spotDist;
+                    float spotTotAtt = fSpotAtt.x + linAtt + quadAtt;
+                    
+                    vec3 spotL = normalize(spotPos - P);
+                    float spotCut = cos(radians(spotCutoff));
+                    float spotCos = dot(normalize(spotDir), spotL);
+                    
+                    vec4 ambient = ambProd, diffuse, specular;
+                    if (fDirOn != 0.0){
+                        vec3 dirL = normalize(dirDir);
+                        vec3 dirH = normalize(dirL + normalize (-P));
+                        Kd = max(dot(dirL, N), 0.0);
+                        diffuse = Kd * diffProd;
+                        Ks = pow(max(dot(N, dirH), 0.0), shin);
+                        specular = Ks * specProd;
+                        if(dot(dirL, N) < 0.0) specular = vec4(0.0, 0.0, 0.0, 1.0);
+                        dir = ambient + diffuse + specular;
+                    }
+                    if (fPosOn != 0.0){
+                        vec3 posL = normalize(posPos - P);
+                        vec3 posH = normalize(posL + normalize (-P));
+                        Kd = max(dot(posL, N), 0.0);
+                        diffuse = Kd * diffProd / posTotAtt;
+                        Ks = pow(max(dot(N, posH), 0.0), shin);
+                        specular = Ks * specProd / posTotAtt;
+                        if(dot(posL, N) < 0.0) specular = vec4(0.0, 0.0, 0.0, 1.0);
+                        pos = ambient + diffuse + specular;
+                    }
+                    if (fSpotOn != 0.0 && spotCos > spotCut){
+                        vec3 spotH = normalize(spotL + normalize (-P));
+                        Kd = max(dot(spotL, N), 0.0);
+                        diffuse = Kd * diffProd / spotTotAtt;
+                        Ks = pow(max(dot(N, spotH), 0.0), shin);
+                        specular = Ks * specProd / spotTotAtt;
+                        if(dot(spotL, N) < 0.0) specular = vec4(0.0, 0.0, 0.0, 1.0);
+                        float spotDif = 1.0 - spotCut;
+                        float spotFactor = clamp((spotCos - spotCut) / spotDif, 0.0, 1.0);
+                        spot = ambient + (diffuse + specular) * spotFactor;
+                    }
+                }
+                gl_FragColor = dir + pos + spot;
+                if (fTexOn != 0.0) gl_FragColor *= texture2D(tex, texCoord);
+                gl_FragColor.a = 1.0;
             }
-            if (posLightOn != 0.0){
-                vec3 posL = normalize(posPos - P);
-                vec3 posH = normalize(posL + normalize (-P));
-                Kd = max(dot(posL, N), 0.0);
-                diffuse = Kd * diffuseProduct / posTotalAttenuation;
-                Ks = pow(max(dot(N, posH), 0.0), shininess);
-                specular = Ks * specularProduct / posTotalAttenuation;
-                if(dot(posL, N) < 0.0) specular = vec4(0.0, 0.0, 0.0, 1.0);
-                pos = ambient + diffuse + specular;
-            }
-            if (spotLightOn != 0.0 && spotAngleCos > spotCutoffCos){
-                vec3 spotH = normalize(spotL + normalize (-P));
-                Kd = max(dot(spotL, N), 0.0);
-                diffuse = Kd * diffuseProduct / spotTotalAttenuation;
-                Ks = pow(max(dot(N, spotH), 0.0), shininess);
-                specular = Ks * specularProduct / spotTotalAttenuation;
-                if(dot(spotL, N) < 0.0) specular = vec4(0.0, 0.0, 0.0, 1.0);
-                float spotDif = 1.0 - spotCutoffCos;
-                float spotFactor = clamp((spotAngleCos - spotCutoffCos) / spotDif, 0.0, 1.0);
-                spot = ambient + (diffuse + specular) * spotFactor;
-            }
-            gl_FragColor = dir + pos + spot;
-            if (texOn != 0.0) gl_FragColor *= texture2D(tex, texCoord);
-            gl_FragColor.a = 1.0;
-        }
         </script>
 
         <script type="text/javascript" src="Common/webgl-utils.js"></script>
@@ -111,14 +223,16 @@
         <script type="text/javascript" src="movement.js"></script>
     </head>
     <body>
-        <div>
-            <button id = "ButtonDir">Dir Light on/off</button>
-            <button id = "ButtonPos">Pos Light on/off</button>
-            <button id = "ButtonSpot">Spot Light on/off</button>
-            <button id="ButtonTex">Texture on/off</button>
+        <div id="container">
+            <canvas id="gl-canvas">
+                Oops ... your browser doesn't support the HTML5 canvas element
+            </canvas>
+            <menu id="buttons">
+                <button id = "ButtonDir">Dir Light on/off</button>
+                <button id = "ButtonPos">Pos Light on/off</button>
+                <button id = "ButtonSpot">Spot Light on/off</button>
+                <button id="ButtonTex">Texture on/off</button>
+            </menu>
         </div>
-        <canvas id="gl-canvas" width="800" height="600">
-            Oops ... your browser doesn't support the HTML5 canvas element
-        </canvas>
     </body>
 </html>

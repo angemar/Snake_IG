@@ -1,44 +1,86 @@
 function SnakeTail (tranX, tranZ) {
-    this.modelMat = translate(tranX, SnakeTail.radius / 2, tranZ);
-    this.modelNormMat = normalMatrix(this.modelMat, false);
+    this.model = translate(tranX, 0, tranZ);
+    this.modelNorm = normalMatrix(this.model, false);
 
-    var obst = mult(this.modelMat, vec4(0.0, 0.0, 0.0, 1.0));
+    var obst = mult(this.model, vec4(0.0, 0.0, 0.0, 1.0));
     this.obstacle = vec3(obst[0], obst[1], obst[2]);
 }
 
-function configureSnakeTail (radius, height, slices, texture) {
+function configureSnakeTail (radius1, radius2, slices, texture) {
     var vertices = [];
     var normals = [];
     var texCoords = [];
     
-    var bottom = -height / 2.0, top = height / 2.0;
-    var vertex = vec4 (0.0, radius * 1.5, bottom, 1.0);
+    var norm;
     for (var i = 0; i < slices; i++) {
-        var angle = i * 2.0 * Math.PI / slices;
-        var nextAngle = (i + 1) * 2.0 * Math.PI / slices;
-        var x = radius * Math.cos(angle);
-        var y = radius * Math.sin(angle);
-        var nextX = radius * Math.cos(nextAngle);
-        var nextY = radius * Math.sin(nextAngle);
+        var angle1 = i * 2.0 * Math.PI / slices;
+        var nextAngle1 = (i + 1) * 2.0 * Math.PI / slices;
         
-        var p1 = vec4(x, y, top, 1.0);
-        var p2 = vec4(nextX, nextY, top, 1.0);
-        
-        vertices.push (p1);
-        vertices.push (vertex);
-        vertices.push (p2);
-
-        normals.push (vec4 (cross (subtract (p2, p1), subtract (p1, vertex))));
-        normals.push (vec4 (cross (subtract (p2, p1), subtract (p1, vertex))));
-        normals.push (vec4 (cross (subtract (p2, p1), subtract (p1, vertex))));
-
-        texCoords.push (angle / (Math.PI), 1.0);
-        texCoords.push (0.5, 0.0);
-        texCoords.push (nextAngle / (Math.PI), 1.0);
+        for (var j = 0; j < slices; j++) {
+            var angle2 = -j * (Math.PI / 2) / slices;
+            var nextAngle2 = -(j + 1) * (Math.PI / 2) / slices;
+            
+            var downRightX = radius1 * Math.cos (angle1) * Math.cos (angle2);
+            var downRightY = radius1 * Math.sin (angle1) * Math.cos (angle2);
+            var downRightZ = radius2 * Math.sin (angle2);
+            
+            var upRightX = radius1 * Math.cos (angle1) * Math.cos (nextAngle2);
+            var upRightY = radius1 * Math.sin (angle1) * Math.cos (nextAngle2);
+            var upRightZ = radius2 * Math.sin (nextAngle2);
+            
+            var downLeftX = radius1 * Math.cos (nextAngle1) * Math.cos (angle2);
+            var downLeftY = radius1 * Math.sin (nextAngle1) * Math.cos (angle2);
+            var downLeftZ = radius2 * Math.sin (angle2);
+            
+            var upLeftX = radius1 * Math.cos (nextAngle1) * Math.cos (nextAngle2);
+            var upLeftY = radius1 * Math.sin (nextAngle1) * Math.cos (nextAngle2);
+            var upLeftZ = radius2 * Math.sin (nextAngle2);
+            
+            var downRight = vec4 (downRightX, downRightY, downRightZ + 0.5, 1.0);
+            var upRight = vec4 (upRightX, upRightY, upRightZ + 0.5, 1.0);
+            var downLeft = vec4 (downLeftX, downLeftY, downLeftZ + 0.5, 1.0);
+            var upLeft = vec4 (upLeftX, upLeftY, upLeftZ + 0.5, 1.0);
+            
+            vertices.push (upLeft);
+            vertices.push (downLeft);
+            vertices.push (downRight);
+            
+            norm = vec4 (cross (subtract (downRight, downLeft),
+                                subtract (upLeft, downLeft)));
+            
+            normals.push (norm);
+            normals.push (norm);
+            normals.push (norm);
+            
+            texCoords.push(nextAngle1 / Math.PI,
+                           nextAngle2 / (Math.PI / 2));
+            texCoords.push(nextAngle1 / Math.PI,
+                           angle2 / (Math.PI / 2));
+            texCoords.push(angle1 / Math.PI,
+                           angle2 / (Math.PI / 2));
+            
+            vertices.push (upLeft);
+            vertices.push (downRight);
+            vertices.push (upRight);
+            
+            norm = vec4 (cross (subtract (downRight, downLeft),
+                                subtract (upLeft, downLeft)));
+            
+            normals.push (norm);
+            normals.push (norm);
+            normals.push (norm);
+            
+            texCoords.push(nextAngle1 / Math.PI,
+                           nextAngle2 / (Math.PI / 2));
+            texCoords.push(angle1 / Math.PI,
+                           angle2 / (Math.PI / 2));
+            texCoords.push(angle1 / Math.PI,
+                           nextAngle2 / (Math.PI / 2));
+        }
     }
     
-    SnakeTail.radius = radius;
-    SnakeTail.height = height;
+    SnakeTail.radius1 = radius1;
+    SnakeTail.radius2 = radius2;
     SnakeTail.slices = slices;
     SnakeTail.texture = texture;
 

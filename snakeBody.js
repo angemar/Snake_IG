@@ -1,8 +1,8 @@
 function SnakeBody (tranX, tranZ) {
-    this.modelMat = translate(tranX, SnakeBody.radius / 2, tranZ);
-    this.modelNormMat = normalMatrix(this.modelMat, false);
+    this.model = translate(tranX, 0, tranZ);
+    this.modelNorm = normalMatrix(this.model, false);
 
-    var obst = mult(this.modelMat, vec4(0.0, 0.0, 0.0, 1.0));
+    var obst = mult(this.model, vec4(0.0, 0.0, 0.0, 1.0));
     this.obstacle = vec3(obst[0], obst[1], obst[2]);
 }
 
@@ -31,9 +31,9 @@ function configureSnakeBody (radius, height, slices, texture) {
         normals.push (sideNorm);
         normals.push (sideNorm);
 
-        texCoords.push(angle / (Math.PI), 0.0);
-        texCoords.push(nextAngle / (Math.PI), 0.0);
-        texCoords.push(angle / (Math.PI), 1.0);
+        texCoords.push(-angle / (Math.PI), 0.0);
+        texCoords.push(-nextAngle / (Math.PI), 0.0);
+        texCoords.push(-angle / (Math.PI), -1.0);
 
         vertices.push (vec4(nextX, nextY, bottom, 1.0));
         vertices.push (vec4(nextX, nextY, top, 1.0));
@@ -43,9 +43,9 @@ function configureSnakeBody (radius, height, slices, texture) {
         normals.push (sideNorm);
         normals.push (sideNorm);
 
-        texCoords.push(nextAngle / (Math.PI), 0.0);
-        texCoords.push(nextAngle / (Math.PI), 1.0);
-        texCoords.push(angle / (Math.PI), 1.0);
+        texCoords.push(-nextAngle / (Math.PI), 0.0);
+        texCoords.push(-nextAngle / (Math.PI), -1.0);
+        texCoords.push(-angle / (Math.PI), -1.0);
     }
     
     SnakeBody.radius = radius;

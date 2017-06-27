@@ -13,7 +13,7 @@ var objPath = "../objects/";
 var yaw = 0.0;
 var pitch = -30.0 * Math.PI / 180.0;
 
-var eye = vec3 (0.0, 2.0, -2.0);
+var eye = vec3 (0.0, 5.0, -5.0);
 var at = vec3 (0.0, 0.0, 0.0);
 var newAt = [0.0, 0.0, 0.0];
 newAt[0] = -Math.sin (yaw) * Math.cos (pitch);
@@ -22,26 +22,23 @@ newAt[2] = Math.cos (pitch) * Math.cos (yaw);
 for (var i = 0; i < 3; i++) at[i] = eye[i] + newAt[i];
 var up = vec3(0.0, 1.0, 0.0);
 
-var fovy = 45.0;
-var aspect = 1.0;
-var near = 0.1;
-var far = Math.sqrt (Math.pow (100.0, 2.0) + Math.pow (100.0, 2.0));
+var fovy = 45.0, aspect, near = 0.1, far;
+var view = lookAt (eye, at, up);
+var viewNorm = normalMatrix (view, false);
+var proj;
 
-var viewMat = lookAt (eye, at, up);
-var viewNormMat = normalMatrix (viewMat, false);
-var projMat = perspective(fovy, aspect, near, far);
-
-var dirLightDirection = [45.0, 45.0, 45.0, 0.0];
-var posLightPosition = [0.0, 25.0, 0.0, 1.0];
-var spotLightPosition = [eye[0], eye[1], eye[2], 1.0];
-var spotLightDirection = [0.0, 0.0, -1.0, 0.0];
+var dirDirection = [45.0, 45.0, 45.0, 0.0];
+var posPosition = [0.0, 25.0, 0.0, 1.0];
+var spotPosition = [eye[0], eye[1], eye[2], 1.0];
+var spotDirection = [0.0, 0.0, -1.0, 0.0];
 
 var keys = {'87' : false, '68' : false, '83' : false, '65' : false,
             '38' : false, '39' : false, '40' : false, '37' : false};
 var keysKeys = Object.keys(keys);
 
-var modelMatLoc, modelNormMatLoc, viewMatLoc, viewNormMatLoc, projMatLoc;
-var dirLightDirLoc, posLightPosLoc, spotLightPosLoc, spotLightDirLoc;
+var modelLoc, modelNormLoc, viewLoc, viewNormLoc, projLoc;
+var dirDirLoc, posPosLoc, spotPosLoc, spotDirLoc;
+var eyeDistLoc;
 
 function loadTexture (texture, image) {
     gl.bindTexture(gl.TEXTURE_2D, texture);
@@ -53,6 +50,8 @@ function loadTexture (texture, image) {
 
 window.onload = function () {
     var canvas = document.getElementById("gl-canvas");
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
 
     gl = WebGLUtils.setupWebGL(canvas);
     if (!gl) alert("WebGL isn't available");
@@ -66,15 +65,10 @@ window.onload = function () {
 
     gl.useProgram(program);
 
-    var snakeBodyTex = gl.createTexture();
-    var snakeBodyImage = new Image ();
-    snakeBodyImage.onload = function () { loadTexture (snakeBodyTex, snakeBodyImage); };
-    snakeBodyImage.src = 'cable_512fica.jpg';
-    
-    var headTex = gl.createTexture();
-    var headImage = new Image ();
-    headImage.onload = function () { loadTexture (headTex, headImage); };
-    headImage.src = 'eyed_cable_512.jpg';
+    var snakeTex = gl.createTexture();
+    var snakeImage = new Image ();
+    snakeImage.onload = function () { loadTexture (snakeTex, snakeImage); };
+    snakeImage.src = 'cable_512.jpg';
     
     var bonusTex = gl.createTexture();
     var bonusImage = new Image ();
@@ -84,23 +78,37 @@ window.onload = function () {
     var worldTex = gl.createTexture();
     var worldImage = new Image ();
     worldImage.onload = function () { loadTexture (worldTex, worldImage); };
-    worldImage.src = 'circuit.jpg';
+    worldImage.src = 'circuit_512.jpg';
     
-    configureSnakeHead (0.3, 60, headTex);
-    objects['head'].push (new SnakeHead (0.0, 1.65));
+    configureSnakeHead (0.35, 0.5, 60, snakeTex);
+    objects['head'].push (new SnakeHead (0.0, 1.3));
     
-    configureSnakeBody (0.25, 1.0, 120, snakeBodyTex);
-    objects['body'].push (new SnakeBody (0.0, 1.0));
+    configureSnakeBody (0.25, 1.0, 60, snakeTex);
     objects['body'].push (new SnakeBody (0.0, 0.0));
     
-    configureSnakeTail (0.25, 0.5, 120, snakeBodyTex);
-    objects['tail'].push (new SnakeTail (0.0, -0.75));
+    configureSnakeTail (0.25, 0.5, 60, snakeTex);
+    objects['tail'].push (new SnakeTail (0.0, -1.0));
     
     configureBonus (0.23, 60, bonusTex, 2);
     objects['bonus'].push (new Bonus (0.0, 3.0));
     
-    configureWorld (100, 100, 50, worldTex);
+    configureWorld (50, 50, 50, worldTex);
     objects['world'].push (new World (0.0, 0.0));
+    if (canvas.width < canvas.height) aspect = canvas.height / canvas.width;
+    else aspect = canvas.width / canvas.height;
+    far = Math.sqrt (Math.pow (World.width, 2.0) + Math.pow (World.height, 2.0));
+    proj = perspective(fovy, aspect, near, far);
+    
+    window.onresize = function () {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        gl.viewport(0, 0, canvas.width, canvas.height);
+        if (canvas.width < canvas.height) aspect = canvas.height / canvas.width;
+        else aspect = canvas.width / canvas.height;
+        far = Math.sqrt (Math.pow (World.width, 2.0) + Math.pow (World.height, 2.0));
+        proj = perspective(fovy, aspect, near, far);
+        gl.uniformMatrix4fv(projLoc, false, flatten(proj));
+    }
     
     objKeys = Object.keys(objects);
     
@@ -115,20 +123,20 @@ window.onload = function () {
     configureLight(gl, program);
     configureButtons(document, gl, program);
     
-    modelMatLoc = gl.getUniformLocation (program, "modelMat");
-    modelNormMatLoc = gl.getUniformLocation (program, "modelNormMat");
-    viewMatLoc = gl.getUniformLocation (program, "viewMat");
-    viewNormMatLoc = gl.getUniformLocation (program, "viewNormMat");
-    projMatLoc = gl.getUniformLocation (program, "projMat");
+    modelLoc = gl.getUniformLocation (program, "model");
+    modelNormLoc = gl.getUniformLocation (program, "modelNorm");
+    viewLoc = gl.getUniformLocation (program, "view");
+    viewNormLoc = gl.getUniformLocation (program, "viewNorm");
+    projLoc = gl.getUniformLocation (program, "proj");
     
-    dirLightDirLoc = gl.getUniformLocation(program, "dirLightDirection");
-    posLightPosLoc = gl.getUniformLocation(program, "posLightPosition");
-    spotLightPosLoc = gl.getUniformLocation(program, "spotLightPosition");
-    spotLightDirLoc = gl.getUniformLocation(program, "spotLightDirection");
+    dirDirLoc = gl.getUniformLocation(program, "dirDirection");
+    posPosLoc = gl.getUniformLocation(program, "posPosition");
+    spotPosLoc = gl.getUniformLocation(program, "spotPosition");
+    spotDirLoc = gl.getUniformLocation(program, "spotDirection");
+    
+    eyeDistLoc = gl.getUniformLocation(program, "eyeDist");
 
-    gl.uniformMatrix4fv(viewMatLoc, false, flatten(viewMat));
-    gl.uniformMatrix4fv(viewNormMatLoc, false, flatten(viewNormMat));
-    gl.uniformMatrix4fv(projMatLoc, false, flatten(projMat));
+    gl.uniformMatrix4fv(projLoc, false, flatten(proj));
     
     gl.activeTexture(gl.TEXTURE0);
     
@@ -142,10 +150,13 @@ var render = function () {
     
     move (keys, keysKeys);
     
-    gl.uniform4fv(dirLightDirLoc, mult (viewNormMat, dirLightDirection));
-    gl.uniform4fv(posLightPosLoc, mult (viewMat, posLightPosition));
-    gl.uniform4fv(spotLightPosLoc, mult (viewMat, spotLightPosition));
-    gl.uniform4fv(spotLightDirLoc, mult (viewNormMat, spotLightDirection));
+    gl.uniformMatrix4fv(viewLoc, false, flatten(view));
+    gl.uniformMatrix4fv(viewNormLoc, false, flatten(viewNorm));
+    
+    gl.uniform4fv(dirDirLoc, mult (viewNorm, dirDirection));
+    gl.uniform4fv(posPosLoc, mult (view, posPosition));
+    gl.uniform4fv(spotPosLoc, mult (view, spotPosition));
+    gl.uniform4fv(spotDirLoc, mult (viewNorm, spotDirection));
     
     for (var i = 0; i < objKeys.length; i++) {
         var proto = Object.getPrototypeOf(objects[objKeys[i]][0]);
@@ -170,12 +181,16 @@ var render = function () {
         
         for (var j = 0; j < objects[objKeys[i]].length; j++) {
             var obj = objects[objKeys[i]][j];
-            if(objKeys[i] === 'bonus'){
-                obj.modelMat = mult(obj.modelMat, Bonus.rotMat);
-                obj.modelNormMat = normalMatrix(obj.modelMat, false);
+            if(objKeys[i] === 'bonus') {
+                obj.model = mult(obj.model, Bonus.rotMat);
+                obj.modelNorm = normalMatrix(obj.model, false);
             }
-            gl.uniformMatrix4fv(modelMatLoc, false, flatten(obj.modelMat));
-            gl.uniformMatrix4fv(modelNormMatLoc, false, flatten(obj.modelNormMat));
+            if (objKeys[i] !== 'world') {
+                gl.uniform1f(eyeDistLoc, length (subtract (obj.obstacle, eye)));
+            }
+            else gl.uniform1f(eyeDistLoc, 0.0);
+            gl.uniformMatrix4fv(modelLoc, false, flatten(obj.model));
+            gl.uniformMatrix4fv(modelNormLoc, false, flatten(obj.modelNorm));
             gl.drawArrays(gl.TRIANGLES, 0, proto.vertices().length);
         }
     }
