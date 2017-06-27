@@ -79,7 +79,6 @@ function configureSnakeHead (radius1, radius2, slices, texture) {
         }
     }
     
-    
     SnakeHead.radius1 = radius1;
     SnakeHead.radius2 = radius2;
     SnakeHead.slices = slices;

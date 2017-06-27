@@ -2,7 +2,7 @@
 
 var gl, program;
 
-var objects = {'body' : [], 'tail' : [], 'head' : [], 'bonus' : [], 'world' : []};
+var objects = {'snake' : [], 'bonus' : [], 'world' : []};
 var objKeys = [];
 
 var vBuffer, nBuffer, tBuffer;
@@ -80,20 +80,15 @@ window.onload = function () {
     worldImage.onload = function () { loadTexture (worldTex, worldImage); };
     worldImage.src = 'circuit_512.jpg';
     
-    configureSnakeHead (0.35, 0.5, 60, snakeTex);
-    objects['head'].push (new SnakeHead (0.0, 1.3));
+    configureSnake(snakeTex);
+    objects['snake'].push (new Snake());
     
-    configureSnakeBody (0.25, 1.0, 60, snakeTex);
-    objects['body'].push (new SnakeBody (0.0, 0.0));
-    
-    configureSnakeTail (0.25, 0.5, 60, snakeTex);
-    objects['tail'].push (new SnakeTail (0.0, -1.0));
-    
-    configureBonus (0.23, 60, bonusTex, 2);
+    configureBonus (0.23, 60, 2, bonusTex);
     objects['bonus'].push (new Bonus (0.0, 3.0));
     
     configureWorld (50, 50, 50, worldTex);
     objects['world'].push (new World (0.0, 0.0));
+    
     if (canvas.width < canvas.height) aspect = canvas.height / canvas.width;
     else aspect = canvas.width / canvas.height;
     far = Math.sqrt (Math.pow (World.width, 2.0) + Math.pow (World.height, 2.0));
@@ -108,7 +103,7 @@ window.onload = function () {
         far = Math.sqrt (Math.pow (World.width, 2.0) + Math.pow (World.height, 2.0));
         proj = perspective(fovy, aspect, near, far);
         gl.uniformMatrix4fv(projLoc, false, flatten(proj));
-    }
+    };
     
     objKeys = Object.keys(objects);
     
@@ -144,8 +139,6 @@ window.onload = function () {
 };
 
 var render = function () {
-    //angle=angle+2;
-    
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
     
     move (keys, keysKeys);

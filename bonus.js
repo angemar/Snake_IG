@@ -6,7 +6,7 @@ function Bonus (tranX, tranZ) {
     this.obstacle = vec3(obst[0], obst[1], obst[2]);
 }
 
-function configureBonus (radius, slices, texture, rotAngle) {
+function configureBonus (radius, slices, rotAngle, texture) {
     var vertices = [];
     var normals = [];
     var texCoords = [];

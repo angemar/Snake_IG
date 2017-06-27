@@ -17,12 +17,14 @@ function move(keys, keysKeys) {
         frontMove[i] = frontDir[i] / 10.0;
         sideMove[i] = sideDir[i] / 10.0;
     }
+    /*
     var origin = vec3 (0.0, 0.0, 0.0);
     for (var j = 0; j < objects['body'].length; j++) {
         var obj = objects['body'][j];
         var collide = SnakeBody.prototype.collide (obj, eye);
         if (!equal(collide, origin)) cannotMoveDirs.push (collide);
     }
+    */
     
     if (keys['87']) {
         // W key
