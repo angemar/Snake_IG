@@ -13,7 +13,7 @@ var objPath = "../objects/";
 var yaw = 0.0;
 var pitch = -30.0 * Math.PI / 180.0;
 
-var eye = vec3 (0.0, 5.0, -5.0);
+var eye = vec3 (0.0, 2.0, -10.0);
 var at = vec3 (0.0, 0.0, 0.0);
 var newAt = [0.0, 0.0, 0.0];
 newAt[0] = -Math.sin (yaw) * Math.cos (pitch);
