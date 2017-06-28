@@ -13,34 +13,34 @@ function configureWorld (width, height, slices, texture) {
     
     for (var i = 0; i < slices; i++) {
         for (var j = 0; j < slices; j++) {
-            var x = widthBottom + i * width / slices;
-            var z = heightBottom + j * height / slices;
-            var nextX = widthBottom + (i + 1) * width / slices;
-            var nextZ = heightBottom + (j + 1) * height / slices;
+            var x1 = widthBottom + i * width / slices;
+            var z1 = heightBottom + j * height / slices;
+            
+            var x2 = widthBottom + (i + 1) * width / slices;
+            var z2 = z1;
+            
+            var v1 = vec4 (x1, 0.0, z1, 1.0);
+            var v2 = vec4 (x2, 0.0, z2, 1.0);
+            
+            if (j === 0) {
+                vertices.push (v1);
+                normals.push (norm);
+                texCoords.push (0.0, 1.0);
+            }
 
-            vertices.push (vec4 (x, 0.0, nextZ, 1.0));
-            vertices.push (vec4(x, 0.0, z, 1.0));
-            vertices.push (vec4(nextX, 0.0, z, 1.0));
-
+            vertices.push (vec4 (x1, 0.0, z1, 1.0));
             normals.push (norm);
+            texCoords.push(j % 2, 1.0);
+            
+            vertices.push (vec4(x2, 0.0, z2, 1.0));
             normals.push (norm);
-            normals.push (norm);
-
-            texCoords.push(0.0, 1.0);
-            texCoords.push(0.0, 0.0);
-            texCoords.push(1.0, 0.0);
-
-            vertices.push (vec4 (x, 0.0, nextZ, 1.0));
-            vertices.push (vec4(nextX, 0.0, z, 1.0));
-            vertices.push (vec4(nextX, 0.0, nextZ, 1.0));
-
-            normals.push (norm);
-            normals.push (norm);
-            normals.push (norm);
-
-            texCoords.push(0.0, 1.0);
-            texCoords.push(1.0, 0.0);
-            texCoords.push(1.0, 1.0);
+            texCoords.push(j % 2, 0.0);
+            
+            if (j === slices - 1) {
+                vertices.push (v2);
+                normals.push (norm);
+                texCoords.push (j % 2, 0.0);
+            }
         }
     }
     

@@ -12,64 +12,57 @@ function configureSnakeRightBody (radius, slices, texture) {
     var texCoords = [];
     
     for (var i = 0; i < slices; i++) {
-        var a1 = (Math.PI / 2.0) + (i * (Math.PI / 2) / slices);
-        var nA1 = (Math.PI / 2.0) +  ((i + 1) * (Math.PI / 2) / slices);
+        var a1 = Math.PI - (i * (Math.PI / 2) / slices);
+        var nA1 = Math.PI - ((i + 1) * (Math.PI / 2) / slices);
         
-        for (var j = 0; j < slices; j++) {
-            var a2 = j * 2 * Math.PI / slices;
-            var nA2 = (j + 1) * 2 * Math.PI / slices;
+        for (var j = 0; j <= slices; j++) {
+            var a2 = j * Math.PI / slices;
+            var nA2 = (j + 1) * Math.PI / slices;
             
-            var downLeftX = -0.5 -(0.5 + radius * Math.cos (a2)) * Math.cos (a1);
-            var downLeftY = -radius * Math.sin (a2);
-            var downLeftZ = -0.5 -(-0.5 - radius * Math.cos (a2)) * Math.sin (a1);
+            var x1 = -0.5 -(0.5 - radius * Math.cos (a2)) * Math.cos (a1);
+            var y1 = radius * Math.sin (a2);
+            var z1 = -0.5 + (0.5 - radius * Math.cos (a2)) * Math.sin (a1);
             
-            var downRightX = -0.5 - (0.5 + radius * Math.cos (a2)) * Math.cos (nA1);
-            var downRightY = -radius * Math.sin (a2);
-            var downRightZ = -0.5 -(-0.5 - radius * Math.cos (a2)) * Math.sin (nA1);
+            var x2 = -0.5 -(0.5 - radius * Math.cos (a2)) * Math.cos (nA1);
+            var y2 = radius * Math.sin (a2);
+            var z2 = -0.5 + (0.5 - radius * Math.cos (a2)) * Math.sin (nA1);
             
-            var upLeftX = -0.5 -(0.5 + radius * Math.cos (nA2)) * Math.cos (a1);
-            var upLeftY = -radius * Math.sin (nA2);
-            var upLeftZ = -0.5 -(-0.5 - radius * Math.cos (nA2)) * Math.sin (a1);
+            var nX1 = -0.5 -(0.5 - radius * Math.cos (nA2)) * Math.cos (a1);
+            var nY1 = radius * Math.sin (nA2);
+            var nZ1 = -0.5 + (0.5 - radius * Math.cos (nA2)) * Math.sin (a1);
             
-            var upRightX = -0.5 -(0.5 + radius * Math.cos (nA2)) * Math.cos (nA1);
-            var upRightY = -radius * Math.sin (nA2);
-            var upRightZ = -0.5 -(-0.5 - radius * Math.cos (nA2)) * Math.sin (nA1);
+            var nX2 = -0.5 -(0.5 - radius * Math.cos (nA2)) * Math.cos (nA1);
+            var nY2 = radius * Math.sin (nA2);
+            var nZ2 = -0.5 + (0.5 - radius * Math.cos (nA2)) * Math.sin (nA1);
             
-            var downLeft = vec4 (downLeftX, downLeftY, downLeftZ, 1.0);
-            var downRight = vec4 (downRightX, downRightY, downRightZ, 1.0);
-            var upLeft = vec4 (upLeftX, upLeftY, upLeftZ, 1.0);
-            var upRight = vec4 (upRightX, upRightY, upRightZ, 1.0);
+            var v1 = vec4 (x1, y1, z1, 1.0);
+            var v2 = vec4 (x2, y2, z2, 1.0);
             
-            vertices.push (upLeft);
-            vertices.push (downLeft);
-            vertices.push (downRight);
+            var nV1 = vec4 (nX1, nY1, nZ1, 1.0);
+            var nV2 = vec4 (nX2, nY2, nZ2, 1.0);
             
-            norm = vec4 (cross (subtract (upLeft, downLeft),
-                                subtract (downRight, downLeft)));
+            var n1 = vec4 (cross (subtract (nV2, nV1), subtract (nV1, v1)));
+            var n2 = n1;
+                         
+            if (j === 0) {
+                vertices.push (v1);
+                normals.push (n1);
+                texCoords.push (-j / slices, -i / slices);
+            }
             
-            normals.push (norm);
-            normals.push (norm);
-            normals.push (norm);
+            vertices.push (v1);
+            normals.push (n1);
+            texCoords.push (-j / slices, -i / slices);
             
-            texCoords.push(-nA2 / Math.PI, i / slices);
-            texCoords.push(-a2 / Math.PI, i / slices);
-            texCoords.push(-a2 / Math.PI, (i + 1) / slices);
+            vertices.push (v2);
+            normals.push (n2);
+            texCoords.push (-j / slices, -(i + 1) / slices);
             
-            vertices.push (upLeft);
-            vertices.push (downRight);
-            vertices.push (upRight);
-            
-            norm = vec4 (cross (subtract (upLeft, downLeft),
-                                subtract (downRight, downLeft)));
-            
-            normals.push (norm);
-            normals.push (norm);
-            normals.push (norm);
-            
-            texCoords.push(-nA2 / Math.PI, i / slices);
-            texCoords.push(-a2 / Math.PI, (i + 1) / slices);
-            texCoords.push(-nA2 / Math.PI, (i + 1) / slices);
-            
+            if (j === slices) {
+                vertices.push (v2);
+                normals.push (n2);
+                texCoords.push (-j / slices, -(i + 1) / slices);
+            }
         }
     }
     

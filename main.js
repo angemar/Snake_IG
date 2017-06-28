@@ -13,7 +13,7 @@ var objPath = "../objects/";
 var yaw = 0.0;
 var pitch = -30.0 * Math.PI / 180.0;
 
-var eye = vec3 (0.0, 2.0, -4.0);
+var eye = vec3 (0.0, 2.0, -6.0);
 var at = vec3 (0.0, 0.0, 0.0);
 var newAt = [0.0, 0.0, 0.0];
 newAt[0] = -Math.sin (yaw) * Math.cos (pitch);
@@ -57,7 +57,7 @@ window.onload = function () {
     if (!gl) alert("WebGL isn't available");
 
     gl.viewport(0, 0, canvas.width, canvas.height);
-    gl.clearColor(1.0, 1.0, 1.0, 1.0);
+    gl.clearColor(0.0, 0.0, 0.0, 1.0);
 
     gl.enable(gl.DEPTH_TEST);
 

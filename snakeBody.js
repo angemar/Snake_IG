@@ -25,21 +25,21 @@ function configureSnakeBody (radius, height, slices, texture) {
         if (i === 0) {
             vertices.push (vec4(x, y, bottom, 1.0));
             normals.push (sideNorm);
-            texCoords.push(i / slices, -1.0);
+            texCoords.push(-i / slices, 1.0);
         }
         
         vertices.push (vec4(x, y, bottom, 1.0));
         normals.push (sideNorm);
-        texCoords.push(i / slices, -1.0);
+        texCoords.push(-i / slices, 1.0);
         
         vertices.push (vec4(x, y, top, 1.0));
         normals.push (sideNorm);
-        texCoords.push(i / slices, 0.0);
+        texCoords.push(-i / slices, 0.0);
         
         if (i === slices) {
             vertices.push (vec4(x, y, top, 1.0));
             normals.push (sideNorm);
-            texCoords.push(i / slices, 0.0);
+            texCoords.push(-i / slices, 0.0);
         }
     }
     

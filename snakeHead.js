@@ -29,8 +29,8 @@ function configureSnakeHead (radius1, radius2, slices, texture) {
             var v1 = vec4 (x1, y1, z1 - 0.2, 1.0);
             var v2 = vec4 (x2, y2, z2 - 0.2, 1.0);
             
-            var n1 = vec4 (x1 / radius1, y1 / radius1, z1 / radius2, 1.0);
-            var n2 = vec4 (x2 / radius1, y2 / radius1, z2 / radius2, 1.0);
+            var n1 = vec4 (x1, y1, z1, 1.0);
+            var n2 = vec4 (x2, y2, z2, 1.0);
             
             if (j === 0) {
                 vertices.push (v1);

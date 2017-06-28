@@ -12,14 +12,14 @@ function configureSnake (texture) {
     
     configureSnakeHead (0.35, 0.5, 30, texture);
     configureSnakeBody (0.25, 1.0, 15, texture);
-    //configureSnakeRightBody (0.25, 60, texture);
-    //configureSnakeTail (0.25, 1.0, 60, texture);
+    configureSnakeRightBody (0.25, 30, texture);
+    configureSnakeTail (0.25, 1.0, 60, texture);
     
     var parts = [new SnakeHead (0.0, 0.0),
                  new SnakeBody (0.0, -1.0),
-                 new SnakeBody (0.0, -2.0)];
-                 //new SnakeTail (0.0, -3.0),
-                 //new SnakeRightBody (0.0, -4.0)];
+                 new SnakeBody (0.0, -2.0),
+                 new SnakeTail (0.0, -3.0),
+                 new SnakeRightBody (0.0, -4.0)];
     
     var protos = [];
     for (var i = 0; i < parts.length; i++)
