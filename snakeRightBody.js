@@ -19,21 +19,21 @@ function configureSnakeRightBody (radius, slices, texture) {
             var a2 = j * 2 * Math.PI / slices;
             var nA2 = (j + 1) * 2 * Math.PI / slices;
             
-            var downLeftX = -(0.5 + radius * Math.cos (a2)) * Math.cos (a1);
+            var downLeftX = -0.5 -(0.5 + radius * Math.cos (a2)) * Math.cos (a1);
             var downLeftY = -radius * Math.sin (a2);
-            var downLeftZ = -(-0.5 - radius * Math.cos (a2)) * Math.sin (a1);
+            var downLeftZ = -0.5 -(-0.5 - radius * Math.cos (a2)) * Math.sin (a1);
             
-            var downRightX = -(0.5 + radius * Math.cos (a2)) * Math.cos (nA1);
+            var downRightX = -0.5 - (0.5 + radius * Math.cos (a2)) * Math.cos (nA1);
             var downRightY = -radius * Math.sin (a2);
-            var downRightZ = -(-0.5 - radius * Math.cos (a2)) * Math.sin (nA1);
+            var downRightZ = -0.5 -(-0.5 - radius * Math.cos (a2)) * Math.sin (nA1);
             
-            var upLeftX = -(0.5 + radius * Math.cos (nA2)) * Math.cos (a1);
+            var upLeftX = -0.5 -(0.5 + radius * Math.cos (nA2)) * Math.cos (a1);
             var upLeftY = -radius * Math.sin (nA2);
-            var upLeftZ = -(-0.5 - radius * Math.cos (nA2)) * Math.sin (a1);
+            var upLeftZ = -0.5 -(-0.5 - radius * Math.cos (nA2)) * Math.sin (a1);
             
-            var upRightX = -(0.5 + radius * Math.cos (nA2)) * Math.cos (nA1);
+            var upRightX = -0.5 -(0.5 + radius * Math.cos (nA2)) * Math.cos (nA1);
             var upRightY = -radius * Math.sin (nA2);
-            var upRightZ = -(-0.5 - radius * Math.cos (nA2)) * Math.sin (nA1);
+            var upRightZ = -0.5 -(-0.5 - radius * Math.cos (nA2)) * Math.sin (nA1);
             
             var downLeft = vec4 (downLeftX, downLeftY, downLeftZ, 1.0);
             var downRight = vec4 (downRightX, downRightY, downRightZ, 1.0);

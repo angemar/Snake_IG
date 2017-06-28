@@ -13,7 +13,7 @@ var objPath = "../objects/";
 var yaw = 0.0;
 var pitch = -30.0 * Math.PI / 180.0;
 
-var eye = vec3 (0.0, 2.0, -10.0);
+var eye = vec3 (0.0, 2.0, -4.0);
 var at = vec3 (0.0, 0.0, 0.0);
 var newAt = [0.0, 0.0, 0.0];
 newAt[0] = -Math.sin (yaw) * Math.cos (pitch);
@@ -57,7 +57,7 @@ window.onload = function () {
     if (!gl) alert("WebGL isn't available");
 
     gl.viewport(0, 0, canvas.width, canvas.height);
-    gl.clearColor(0.0, 0.0, 0.0, 1.0);
+    gl.clearColor(1.0, 1.0, 1.0, 1.0);
 
     gl.enable(gl.DEPTH_TEST);
 
@@ -80,10 +80,10 @@ window.onload = function () {
     worldImage.onload = function () { loadTexture (worldTex, worldImage); };
     worldImage.src = 'circuit_512.jpg';
     
-    configureSnake(snakeTex);
+    configureSnake (snakeTex);
     objects['snake'].push (new Snake());
     
-    configureBonus (0.23, 60, 2, bonusTex);
+    configureBonus (0.23, 30, 2, bonusTex);
     objects['bonus'].push (new Bonus (0.0, 3.0));
     
     configureWorld (50, 50, 50, worldTex);
@@ -152,6 +152,8 @@ var render = function () {
     gl.uniform4fv(spotDirLoc, mult (viewNorm, spotDirection));
     
     for (var i = 0; i < objKeys.length; i++) {
+        if (objects[objKeys[i]].length === 0) continue;
+        
         var proto = Object.getPrototypeOf(objects[objKeys[i]][0]);
         
         gl.bindBuffer(gl.ARRAY_BUFFER, vBuffer);
@@ -184,7 +186,7 @@ var render = function () {
             else gl.uniform1f(eyeDistLoc, 0.0);
             gl.uniformMatrix4fv(modelLoc, false, flatten(obj.model));
             gl.uniformMatrix4fv(modelNormLoc, false, flatten(obj.modelNorm));
-            gl.drawArrays(gl.TRIANGLES, 0, proto.vertices().length);
+            gl.drawArrays(gl.TRIANGLE_STRIP, 0, proto.vertices().length);
         }
     }
     requestAnimFrame(render);

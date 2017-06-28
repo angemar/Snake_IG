@@ -1,5 +1,5 @@
 function SnakeBody (tranX, tranZ) {
-    this.model = translate(tranX, 0, tranZ);
+    this.model = translate(tranX, 0.0, tranZ);
     this.modelNorm = normalMatrix(this.model, false);
 
     var obst = mult(this.model, vec4(0.0, 0.0, 0.0, 1.0));
@@ -12,40 +12,35 @@ function configureSnakeBody (radius, height, slices, texture) {
     var texCoords = [];
 
     var bottom = -height / 2.0, top = height / 2.0;
-    for (var i = 0; i < slices; i++) {
-        var angle = i * 2.0 * Math.PI / slices;
-        var nextAngle = (i + 1) * 2.0 * Math.PI / slices;
+    
+    for (var i = 0; i <= slices; i++) {
+        var angle = i * Math.PI / slices;
+        var nextAngle = (i + 1) * Math.PI / slices;
         var x = radius * Math.cos(angle);
         var y = radius * Math.sin(angle);
-        var nextX = radius * Math.cos(nextAngle);
-        var nextY = radius * Math.sin(nextAngle);
 
         var midAngle = (angle + nextAngle) / 2;
         var sideNorm = vec4(Math.cos(midAngle), Math.sin(midAngle), 0.0, 1.0);
-
+        
+        if (i === 0) {
+            vertices.push (vec4(x, y, bottom, 1.0));
+            normals.push (sideNorm);
+            texCoords.push(i / slices, -1.0);
+        }
+        
         vertices.push (vec4(x, y, bottom, 1.0));
-        vertices.push (vec4(nextX, nextY, bottom, 1.0));
+        normals.push (sideNorm);
+        texCoords.push(i / slices, -1.0);
+        
         vertices.push (vec4(x, y, top, 1.0));
-
         normals.push (sideNorm);
-        normals.push (sideNorm);
-        normals.push (sideNorm);
-
-        texCoords.push(-angle / (Math.PI), 0.0);
-        texCoords.push(-nextAngle / (Math.PI), 0.0);
-        texCoords.push(-angle / (Math.PI), -1.0);
-
-        vertices.push (vec4(nextX, nextY, bottom, 1.0));
-        vertices.push (vec4(nextX, nextY, top, 1.0));
-        vertices.push (vec4(x, y, top, 1.0));
-
-        normals.push (sideNorm);
-        normals.push (sideNorm);
-        normals.push (sideNorm);
-
-        texCoords.push(-nextAngle / (Math.PI), 0.0);
-        texCoords.push(-nextAngle / (Math.PI), -1.0);
-        texCoords.push(-angle / (Math.PI), -1.0);
+        texCoords.push(i / slices, 0.0);
+        
+        if (i === slices) {
+            vertices.push (vec4(x, y, top, 1.0));
+            normals.push (sideNorm);
+            texCoords.push(i / slices, 0.0);
+        }
     }
     
     SnakeBody.radius = radius;

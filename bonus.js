@@ -11,78 +11,53 @@ function configureBonus (radius, slices, rotAngle, texture) {
     var normals = [];
     var texCoords = [];
     
-    var norm;
-    
     for (var i = 0; i < slices; i++) {
-        var angle1 = i * 2.0 * Math.PI / slices;
-        var nextAngle1 = (i + 1) * 2.0 * Math.PI / slices;
-        for (var j = -slices; j < slices; j++) {
-            var angle2 = j * (Math.PI / 2) / slices;
-            var nextAngle2 = (j + 1) * (Math.PI / 2) / slices;
+        var angle1 = Math.PI - (i * Math.PI / slices);
+        var nextAngle1 = Math.PI - ((i + 1) *  Math.PI / slices);
+        
+        for (var j = 0; j <= slices; j++) {
+            var angle2 = j * 2 * Math.PI / slices;
             
-            var downRightX = radius * Math.cos (angle1) * Math.cos (angle2);
-            var downRightY = radius * Math.sin (angle1) * Math.cos (angle2);
-            var downRightZ = radius * Math.sin (angle2);
+            var x1 = radius * Math.sin (angle1) * Math.cos (angle2);
+            var y1 = radius * Math.sin (angle1) * Math.sin (angle2);
+            var z1 = radius * Math.cos (angle1);
             
-            var upRightX = radius * Math.cos (angle1) * Math.cos (nextAngle2);
-            var upRightY = radius * Math.sin (angle1) * Math.cos (nextAngle2);
-            var upRightZ = radius * Math.sin (nextAngle2);
+            var x2 = radius * Math.sin (nextAngle1) * Math.cos (angle2);
+            var y2 = radius * Math.sin (nextAngle1) * Math.sin (angle2);
+            var z2 = radius * Math.cos (nextAngle1);
             
-            var downLeftX = radius * Math.cos (nextAngle1) * Math.cos (angle2);
-            var downLeftY = radius * Math.sin (nextAngle1) * Math.cos (angle2);
-            var downLeftZ = radius * Math.sin (angle2);
+            var v1 = vec4 (x1, y1, z1, 1.0);
+            var v2 = vec4 (x2, y2, z2, 1.0);
             
-            var upLeftX = radius * Math.cos (nextAngle1) * Math.cos (nextAngle2);
-            var upLeftY = radius * Math.sin (nextAngle1) * Math.cos (nextAngle2);
-            var upLeftZ = radius * Math.sin (nextAngle2);
+            var n1 = vec4 (x1 / radius, y1 / radius, z1 / radius, 1.0);
+            var n2 = vec4 (x2 / radius, y2 / radius, z2 / radius, 1.0);
             
-            var downRight = vec4 (downRightX, downRightY, downRightZ, 1.0);
-            var upRight = vec4 (upRightX, upRightY, upRightZ, 1.0);
-            var downLeft = vec4 (downLeftX, downLeftY, downLeftZ, 1.0);
-            var upLeft = vec4 (upLeftX, upLeftY, upLeftZ, 1.0);
+            if (j === 0) {
+                vertices.push (v1);
+                normals.push (n1);
+                texCoords.push (j / slices, i / slices);
+            }
             
-            vertices.push (upLeft);
-            vertices.push (downLeft);
-            vertices.push (downRight);
+            vertices.push (v1);
+            normals.push (n1);
+            texCoords.push (j / slices, i / slices);
             
-            norm = vec4 (cross (subtract (upLeft, downLeft),
-                                subtract (downRight, downLeft)));
+            vertices.push (v2);
+            normals.push (n2);
+            texCoords.push (j / slices, (i + 1) / slices);
             
-            normals.push (norm);
-            normals.push (norm);
-            normals.push (norm);
-            
-            texCoords.push((nextAngle1 + Math.PI / 2) / (2 * Math.PI),
-                           (nextAngle2 + Math.PI / 2) / Math.PI);
-            texCoords.push((nextAngle1 + Math.PI / 2) / (2 * Math.PI),
-                           (angle2 + Math.PI / 2) / Math.PI);
-            texCoords.push((angle1 + Math.PI / 2) / (2 * Math.PI),
-                           (angle2 + Math.PI / 2) / Math.PI);
-            
-            vertices.push (upLeft);
-            vertices.push (downRight);
-            vertices.push (upRight);
-            
-            norm = vec4 (cross (subtract (upLeft, downLeft),
-                                subtract (downRight, downLeft)));
-            
-            normals.push (norm);
-            normals.push (norm);
-            normals.push (norm);
-            
-            texCoords.push((nextAngle1 + Math.PI / 2) / (2 * Math.PI),
-                           (nextAngle2 + Math.PI / 2) / Math.PI);
-            texCoords.push((angle1 + Math.PI / 2) / (2 * Math.PI),
-                           (angle2 + Math.PI / 2) / Math.PI);
-            texCoords.push((angle1 + Math.PI / 2) / (2 * Math.PI),
-                           (nextAngle2 + Math.PI / 2) / Math.PI);
+            if (j === slices) {
+                vertices.push (v2);
+                normals.push (n2);
+                texCoords.push (j / slices, (i + 1) / slices);
+            }
         }
     }
     
     Bonus.radius = radius;
     Bonus.slices = slices;
     Bonus.texture = texture;
-    Bonus.rotMat = rotate (rotAngle, 1.0, 1.0, 0.0);
+    Bonus.rotMat = rotate (rotAngle, -1.0, 1.0, 0.0);
 
     Bonus.vertices = vertices;
     Bonus.normals = normals;

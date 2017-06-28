@@ -52,12 +52,9 @@ function configureSnakeTail (radius1, radius2, slices, texture) {
             normals.push (norm);
             normals.push (norm);
             
-            texCoords.push(nextAngle1 / Math.PI,
-                           nextAngle2 / (Math.PI / 2));
-            texCoords.push(nextAngle1 / Math.PI,
-                           angle2 / (Math.PI / 2));
-            texCoords.push(angle1 / Math.PI,
-                           angle2 / (Math.PI / 2));
+            texCoords.push(-2 * (i + 1) / slices, 2 * (j + 1) / slices);
+            texCoords.push(-2 * (i + 1) / slices, 2 * j / slices);
+            texCoords.push(-2 * i / slices, 2 * j / slices);
             
             vertices.push (upLeft);
             vertices.push (downRight);
@@ -70,12 +67,9 @@ function configureSnakeTail (radius1, radius2, slices, texture) {
             normals.push (norm);
             normals.push (norm);
             
-            texCoords.push(nextAngle1 / Math.PI,
-                           nextAngle2 / (Math.PI / 2));
-            texCoords.push(angle1 / Math.PI,
-                           angle2 / (Math.PI / 2));
-            texCoords.push(angle1 / Math.PI,
-                           nextAngle2 / (Math.PI / 2));
+            texCoords.push(-2 * (i + 1) / slices, 2 * (j + 1) / slices);
+            texCoords.push(-2 * i / slices, 2 * j / slices);
+            texCoords.push(-2 * i / slices, 2 * (j + 1) / slices);
         }
     }
     
