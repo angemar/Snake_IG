@@ -5,7 +5,7 @@ var gl, program;
 var objects = {'snake' : [], 'bonus' : [], 'world' : []};
 var objKeys = [];
 
-var vBuffer, nBuffer, tBuffer;
+var vBuffer, nBuffer, tBuffer, iBuffer;
 var vPosition, vNormal, vTexCoord;
 
 var objPath = "../objects/";
@@ -57,7 +57,7 @@ window.onload = function () {
     if (!gl) alert("WebGL isn't available");
 
     gl.viewport(0, 0, canvas.width, canvas.height);
-    gl.clearColor(0.0, 0.0, 0.0, 1.0);
+    gl.clearColor(1.0, 1.0, 1.0, 1.0);
 
     gl.enable(gl.DEPTH_TEST);
 
@@ -84,7 +84,7 @@ window.onload = function () {
     objects['snake'].push (new Snake());
     
     configureBonus (0.23, 30, 2, bonusTex);
-    objects['bonus'].push (new Bonus (0.0, 3.0));
+    objects['bonus'].push (new Bonus (0.0, 1.0));
     
     configureWorld (50, 50, 50, worldTex);
     objects['world'].push (new World (0.0, 0.0));
@@ -110,6 +110,7 @@ window.onload = function () {
     vBuffer = gl.createBuffer();
     nBuffer = gl.createBuffer();
     tBuffer = gl.createBuffer();
+    iBuffer = gl.createBuffer();
 
     vPosition = gl.getAttribLocation(program, "vPosition");
     vNormal = gl.getAttribLocation(program, "vNormal");
@@ -156,18 +157,21 @@ var render = function () {
         
         var proto = Object.getPrototypeOf(objects[objKeys[i]][0]);
         
+        gl.bindBuffer (gl.ELEMENT_ARRAY_BUFFER, iBuffer);
+        gl.bufferData (gl.ELEMENT_ARRAY_BUFFER, proto.indices (), gl.DYNAMIC_DRAW);
+        
         gl.bindBuffer(gl.ARRAY_BUFFER, vBuffer);
-        gl.bufferData(gl.ARRAY_BUFFER, flatten (proto.vertices ()), gl.STATIC_DRAW);
+        gl.bufferData(gl.ARRAY_BUFFER, flatten (proto.vertices ()), gl.DYNAMIC_DRAW);
         gl.vertexAttribPointer(vPosition, 4, gl.FLOAT, false, 0, 0);
         gl.enableVertexAttribArray(vPosition);
 
         gl.bindBuffer(gl.ARRAY_BUFFER, nBuffer);
-        gl.bufferData(gl.ARRAY_BUFFER, flatten (proto.normals ()), gl.STATIC_DRAW);
+        gl.bufferData(gl.ARRAY_BUFFER, flatten (proto.normals ()), gl.DYNAMIC_DRAW);
         gl.vertexAttribPointer(vNormal, 4, gl.FLOAT, false, 0, 0);
         gl.enableVertexAttribArray(vNormal);
         
         gl.bindBuffer(gl.ARRAY_BUFFER, tBuffer);
-        gl.bufferData(gl.ARRAY_BUFFER, flatten (proto.texCoords ()), gl.STATIC_DRAW);
+        gl.bufferData(gl.ARRAY_BUFFER, flatten (proto.texCoords ()), gl.DYNAMIC_DRAW);
         gl.vertexAttribPointer(vTexCoord, 2, gl.FLOAT, false, 0, 0);
         gl.enableVertexAttribArray(vTexCoord);
         
@@ -186,7 +190,7 @@ var render = function () {
             else gl.uniform1f(eyeDistLoc, 0.0);
             gl.uniformMatrix4fv(modelLoc, false, flatten(obj.model));
             gl.uniformMatrix4fv(modelNormLoc, false, flatten(obj.modelNorm));
-            gl.drawArrays(gl.TRIANGLE_STRIP, 0, proto.vertices().length);
+            gl.drawElements(gl.TRIANGLE_STRIP, proto.indices().length, gl.UNSIGNED_SHORT, 0);
         }
     }
     requestAnimFrame(render);

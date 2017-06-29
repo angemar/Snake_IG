@@ -10,6 +10,7 @@ function configureSnakeHead (radius1, radius2, slices, texture) {
     var vertices = [];
     var normals = [];
     var texCoords = [];
+    var indices = [];
     
     for (var i = slices / 4; i < slices; i++) {
         var angle1 = Math.PI - (i * Math.PI / slices);
@@ -32,27 +33,55 @@ function configureSnakeHead (radius1, radius2, slices, texture) {
             var n1 = vec4 (x1, y1, z1, 1.0);
             var n2 = vec4 (x2, y2, z2, 1.0);
             
-            if (j === 0) {
-                vertices.push (v1);
-                normals.push (n1);
-                texCoords.push (-j / slices, -i / slices);
+            var c1 = vec2 (-j / slices, -i / slices);
+            var c2 = vec2 (-j / slices, -(i + 1) / slices);
+            
+            var verts = [], norms = [], coords = [];
+            
+            if (j === 0){
+                verts.push (v1);
+                norms.push (n1);
+                coords.push (c1);
             }
             
-            vertices.push (v1);
-            normals.push (n1);
-            texCoords.push (-j / slices, -i / slices);
+            verts.push (v1);
+            norms.push (n1);
+            coords.push (c1);
             
-            vertices.push (v2);
-            normals.push (n2);
-            texCoords.push (-j / slices, -(i + 1) / slices);
+            verts.push (v2);
+            norms.push (n2);
+            coords.push (c2);
             
-            if (j === slices) {
-                vertices.push (v2);
-                normals.push (n2);
-                texCoords.push (-j / slices, -(i + 1) / slices);
+            if (j === slices){
+                verts.push (v2);
+                norms.push (n2);
+                coords.push (c2);
+            }
+            
+            for (var k = 0; k < verts.length; k ++) {
+                var ind = -1;
+                for (var z = 0; z < vertices.length; z++) {
+                    if (verts[k][0] === vertices[z][0] &&
+                            verts[k][1] === vertices[z][1] &&
+                            verts[k][2] === vertices[z][2]) {
+                        if (coords[k][0] === texCoords[z][0] &&
+                                coords[k][1] === texCoords[z][1]) {
+                            ind = z;
+                            break;
+                        }
+                    }
+                }
+                if (ind !== -1) indices.push (ind);
+                else {
+                    indices.push (vertices.length);
+                    vertices.push (verts[k]);
+                    normals.push (norms[k]);
+                    texCoords.push (coords[k]);
+                }
             }
         }
     }
+    indices = new Uint16Array(indices);
     
     SnakeHead.radius1 = radius1;
     SnakeHead.radius2 = radius2;
@@ -62,10 +91,12 @@ function configureSnakeHead (radius1, radius2, slices, texture) {
     SnakeHead.vertices = vertices;
     SnakeHead.normals = normals;
     SnakeHead.texCoords = texCoords;
+    SnakeHead.indices = indices;
     
     SnakeHead.prototype.vertices = function () { return SnakeHead.vertices; };
     SnakeHead.prototype.normals = function () { return SnakeHead.normals; };
     SnakeHead.prototype.texCoords = function () { return SnakeHead.texCoords; };
+    SnakeHead.prototype.indices = function () { return SnakeHead.indices; };
     SnakeHead.prototype.texture = function () { return SnakeHead.texture; };
 
     SnakeHead.prototype.collide = function (tail, other) {
