@@ -68,23 +68,23 @@ window.onload = function () {
     var snakeTex = gl.createTexture();
     var snakeImage = new Image ();
     snakeImage.onload = function () { loadTexture (snakeTex, snakeImage); };
-    snakeImage.src = 'cable_512.jpg';
+    snakeImage.src = 'skin_512.jpg';
     
     var bonusTex = gl.createTexture();
     var bonusImage = new Image ();
     bonusImage.onload = function () { loadTexture (bonusTex, bonusImage); };
-    bonusImage.src = 'bonus_1024.jpg';
+    bonusImage.src = 'apple_512.jpg';
     
     var worldTex = gl.createTexture();
     var worldImage = new Image ();
     worldImage.onload = function () { loadTexture (worldTex, worldImage); };
-    worldImage.src = 'circuit_512.jpg';
+    worldImage.src = 'grass_512.jpg';
     
     configureSnake (snakeTex);
     objects['snake'].push (new Snake());
     
     configureBonus (0.23, 30, 2, bonusTex);
-    objects['bonus'].push (new Bonus (0.0, 1.0));
+    objects['bonus'].push (new Bonus (0.0, 3.0));
     
     configureWorld (50, 50, 50, worldTex);
     objects['world'].push (new World (0.0, 0.0));
@@ -137,9 +137,10 @@ window.onload = function () {
     gl.activeTexture(gl.TEXTURE0);
     
     render();
+    
 };
 
-var render = function () {
+var render = function () { 
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
     
     move (keys, keysKeys);
@@ -180,6 +181,9 @@ var render = function () {
         
         for (var j = 0; j < objects[objKeys[i]].length; j++) {
             var obj = objects[objKeys[i]][j];
+            if(objKeys[i]==="snake"){
+                obj.move(0.01);
+            }
             if(objKeys[i] === 'bonus') {
                 obj.model = mult(obj.model, Bonus.rotMat);
                 obj.modelNorm = normalMatrix(obj.model, false);
@@ -187,11 +191,14 @@ var render = function () {
             if (objKeys[i] !== 'world') {
                 gl.uniform1f(eyeDistLoc, length (subtract (obj.obstacle, eye)));
             }
-            else gl.uniform1f(eyeDistLoc, 0.0);
+            else{
+                gl.uniform1f(eyeDistLoc, 0.0);               
+            }
             gl.uniformMatrix4fv(modelLoc, false, flatten(obj.model));
             gl.uniformMatrix4fv(modelNormLoc, false, flatten(obj.modelNorm));
             gl.drawElements(gl.TRIANGLE_STRIP, proto.indices().length, gl.UNSIGNED_SHORT, 0);
         }
     }
+    
     requestAnimFrame(render);
 };

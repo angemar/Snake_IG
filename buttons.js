@@ -29,6 +29,15 @@ function configureButtons(document, gl, program) {
         if (Object.keys(keys).indexOf(e.keyCode.toString()) == -1) return;
         keys[e.keyCode] = e.type == 'keydown';
     };
+    
+    document.onkeypress = function(e){
+        var code = e.charCode;
+        if(code === 109 || code === 110)
+            objects["snake"][0].changeDir(code);
+        if(code === 97)
+            objects["snake"][0].aggiugni();
+        
+    };
 
     gl.uniform1f(dirOnLoc, 1.0);
     gl.uniform1f(posOnLoc, 1.0);
