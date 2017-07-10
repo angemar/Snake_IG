@@ -68,7 +68,7 @@ window.onload = function () {
     var snakeTex = gl.createTexture();
     var snakeImage = new Image ();
     snakeImage.onload = function () { loadTexture (snakeTex, snakeImage); };
-    snakeImage.src = 'skin_512.jpg';
+    snakeImage.src = 'skin2_512.jpg';
     
     var bonusTex = gl.createTexture();
     var bonusImage = new Image ();
@@ -181,8 +181,8 @@ var render = function () {
         
         for (var j = 0; j < objects[objKeys[i]].length; j++) {
             var obj = objects[objKeys[i]][j];
-            if(objKeys[i]==="snake"){
-                obj.move(0.01);
+            if(objKeys[i] === 'snake'){
+                obj.move(0.0);
             }
             if(objKeys[i] === 'bonus') {
                 obj.model = mult(obj.model, Bonus.rotMat);

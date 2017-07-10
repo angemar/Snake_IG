@@ -4,23 +4,23 @@ function Snake () {
     var obst = mult(this.model, vec4(0.0, 0.0, 0.0, 1.0));
     this.obstacle = vec3(obst[0], obst[1], obst[2]);
     
-    this.move = function (step) {
+    this.move = function (step) {        
         this.model=mult(this.model, translate(0.0, 0.0, step));
         this.modelNorm = normalMatrix(this.model, false);        
     };
     
     this.changeDir = function(code){
-        if(code === 110)
-            this.model=mult(this.model, rotate (90, 0.0, 1.0, 0.0));
-        else
-            this.model=mult(this.model, rotate (-90, 0.0, 1.0, 0.0));
-        
-        this.modelNorm = normalMatrix(this.model, false);
+        if(code === 110) rotation('l');
+        else rotation('r');
     };
     
     this.aggiugni = function(){
         var parts = Snake.prototype.parts();
-        parts.splice(2, 0, new SnakeBody(0.0, 0.0));
+        
+        parts[0].model=mult(parts[0].model, translate(0.0, 0.0, 1.0));
+        parts[0].modelNorm = normalMatrix(parts[0].model, false);  
+        
+        parts.splice(1, 0, new SnakeBody(0.0, 0.0));
         configureSnake2(parts);
         
     };
@@ -31,6 +31,8 @@ function configureSnake (texture) {
     configureSnakeHead (0.35, 0.5, 30, texture);
     configureSnakeBody (0.25, 1.0, 15, texture);
     configureSnakeTail (0.25, 1.0, 60, texture);
+    configureSnakeLeftBody (0.25, 15, texture);
+    configureSnakeRightBody (0.25, 15, texture);
     
     var parts = [
         new SnakeHead (0.0, 0.0),
@@ -57,8 +59,10 @@ function configureSnake2(parts){
     var indices = [];
     
     for (var i = 1; i < parts.length; i++){
-        parts[i].model=mult(parts[i-1].model, translate(0.0, 0.0, -1.0));
-        parts[i].modelNorm = normalMatrix(parts[i].model, false);
+        if(!(parts[i] instanceof SnakeLeftBody || parts[i] instanceof SnakeRightBody)){
+            parts[i].model=mult(parts[i-1].model, translate(0.0, 0.0, -1.0));
+            parts[i].modelNorm = normalMatrix(parts[i].model, false);
+        }
     }
     
     var protos = [];
@@ -96,4 +100,30 @@ function configureSnake2(parts){
     Snake.prototype.indices = function () { return Snake.indices; };
     Snake.prototype.parts = function () { return Snake.parts; };
 
+}
+
+function rotation(dir){
+    var parts = Snake.prototype.parts();
+    
+    var obj;
+    if(dir === 'l'){
+        obj = new SnakeLeftBody(0.0, 0.0);
+        obj.model = parts[0].model;
+    }else{
+        obj = new SnakeRightBody(0.0, 0.0);
+        obj.model = parts[0].model;
+    }
+    
+    obj.modelNorm = normalMatrix(obj.model, false); 
+    
+    parts.splice(1, 0, obj);
+ 
+    if( dir === 'l') parts[0].model = mult(parts[0].model , rotate(90, 0.0, 1.0, 0.0));
+    else parts[0].model = mult(parts[0].model , rotate(-90, 0.0, 1.0, 0.0));
+    
+    parts[0].model = mult(parts[0].model , translate(0.0, 0.0, 1.0));
+    parts[0].modelNorm = normalMatrix(parts[0].model, false);
+    
+    
+    configureSnake2(parts);
 }

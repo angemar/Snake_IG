@@ -31,10 +31,10 @@ function configureButtons(document, gl, program) {
     };
     
     document.onkeypress = function(e){
-        var code = e.charCode;
+        var code = e.charCode; 
         if(code === 109 || code === 110)
             objects["snake"][0].changeDir(code);
-        if(code === 97)
+        if(code === 32)
             objects["snake"][0].aggiugni();
         
     };
