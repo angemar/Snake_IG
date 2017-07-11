@@ -35,13 +35,12 @@ function configureButtons(document, gl, program) {
         if(code === 109 || code === 110)
             objects["snake"][0].changeDir(code);
         if(code === 32)
-            objects["snake"][0].aggiugni();
+            objects["snake"][0].aggiungi();
         
     };
 
     gl.uniform1f(dirOnLoc, 1.0);
     gl.uniform1f(posOnLoc, 1.0);
     gl.uniform1f(spotOnLoc, 1.0);
-
     gl.uniform1f(texOnLoc, 1.0);
 }

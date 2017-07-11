@@ -4,6 +4,21 @@ function Bonus (tranX, tranZ) {
 
     var obst = mult(this.model, vec4(0.0, 0.0, 0.0, 1.0));
     this.obstacle = vec3(obst[0], obst[1], obst[2]);
+    
+     this.eat = function(){
+        var parts=Snake.prototype.parts();
+        var x1=parts[0].model[0][3];
+        var x2=this.model[0][3];
+        var y1=parts[0].model[2][3];
+        var y2=this.model[2][3];
+        if(Math.sqrt(Math.pow(x2-x1, 2) + Math.pow(y2-y1, 2)) < 0.23){
+            var x= Math.floor((Math.random() * 50) - 24.5) + 0.5;
+            var y= Math.floor((Math.random() * 50) - 24.5) + 0.5;
+            objects['bonus'].pop();
+            objects['bonus'].push(new Bonus(x, y));
+            objects["snake"][0].aggiungi();
+        }
+    };
 }
 
 function configureBonus (radius, slices, rotAngle, texture) {

@@ -68,7 +68,7 @@ window.onload = function () {
     var snakeTex = gl.createTexture();
     var snakeImage = new Image ();
     snakeImage.onload = function () { loadTexture (snakeTex, snakeImage); };
-    snakeImage.src = 'skin2_512.jpg';
+    snakeImage.src = 'skin_512.jpg';
     
     var bonusTex = gl.createTexture();
     var bonusImage = new Image ();
@@ -84,7 +84,7 @@ window.onload = function () {
     objects['snake'].push (new Snake());
     
     configureBonus (0.23, 30, 2, bonusTex);
-    objects['bonus'].push (new Bonus (0.0, 3.0));
+    objects['bonus'].push (new Bonus (0.5, 3.5));
     
     configureWorld (50, 50, 50, worldTex);
     objects['world'].push (new World (0.0, 0.0));
@@ -182,11 +182,13 @@ var render = function () {
         for (var j = 0; j < objects[objKeys[i]].length; j++) {
             var obj = objects[objKeys[i]][j];
             if(objKeys[i] === 'snake'){
-                obj.move(0.0);
+                obj.move(0.005);
             }
-            if(objKeys[i] === 'bonus') {
+            if(objKeys[i] === 'bonus') { 
                 obj.model = mult(obj.model, Bonus.rotMat);
                 obj.modelNorm = normalMatrix(obj.model, false);
+                
+                obj.eat(objects['bonus'][0])
             }
             if (objKeys[i] !== 'world') {
                 gl.uniform1f(eyeDistLoc, length (subtract (obj.obstacle, eye)));

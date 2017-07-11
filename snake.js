@@ -4,9 +4,12 @@ function Snake () {
     var obst = mult(this.model, vec4(0.0, 0.0, 0.0, 1.0));
     this.obstacle = vec3(obst[0], obst[1], obst[2]);
     
-    this.move = function (step) {        
-        this.model=mult(this.model, translate(0.0, 0.0, step));
-        this.modelNorm = normalMatrix(this.model, false);        
+    this.move = function (step) {  
+        var parts = Snake.prototype.parts();
+        parts[0].model=mult(parts[0].model, translate(0.0, 0.0, step));
+        parts[0].modelNorm = normalMatrix(parts[0].model, false);
+        configureSnake2(parts);
+        
     };
     
     this.changeDir = function(code){
@@ -14,7 +17,7 @@ function Snake () {
         else rotation('r');
     };
     
-    this.aggiugni = function(){
+    this.aggiungi = function(){
         var parts = Snake.prototype.parts();
         
         parts[0].model=mult(parts[0].model, translate(0.0, 0.0, 1.0));
@@ -24,6 +27,8 @@ function Snake () {
         configureSnake2(parts);
         
     };
+    
+   
 }
 
 function configureSnake (texture) {
@@ -35,7 +40,7 @@ function configureSnake (texture) {
     configureSnakeRightBody (0.25, 15, texture);
     
     var parts = [
-        new SnakeHead (0.0, 0.0),
+        new SnakeHead (0.5, 0.5),
         new SnakeBody (0.0, 0.0),
         new SnakeBody (0.0, 0.0),
         new SnakeTail (0.0, 0.0)
@@ -105,6 +110,17 @@ function configureSnake2(parts){
 function rotation(dir){
     var parts = Snake.prototype.parts();
     
+    if(parts[0].model[2][3] % 0.5 !==0){
+        var pos=parts[0].model[2][3] + 0.5;
+        var x= Math.ceil(pos) - 0.5;
+        parts[0].model[2][3]=x;
+    }
+    if(parts[0].model[0][3] % 0.5 !==0){
+        var pos=parts[0].model[0][3] + 0.5;
+        var x= Math.ceil(pos) - 0.5;
+        parts[0].model[0][3]=x;
+    }
+    
     var obj;
     if(dir === 'l'){
         obj = new SnakeLeftBody(0.0, 0.0);
@@ -117,11 +133,16 @@ function rotation(dir){
     obj.modelNorm = normalMatrix(obj.model, false); 
     
     parts.splice(1, 0, obj);
- 
+    
+     
+    //while(parts[0].model[0][3] % 0.5 !==0 && parts[0].model[2][3] % 0.5 !==0){};
     if( dir === 'l') parts[0].model = mult(parts[0].model , rotate(90, 0.0, 1.0, 0.0));
     else parts[0].model = mult(parts[0].model , rotate(-90, 0.0, 1.0, 0.0));
     
+    
     parts[0].model = mult(parts[0].model , translate(0.0, 0.0, 1.0));
+    
+   
     parts[0].modelNorm = normalMatrix(parts[0].model, false);
     
     
