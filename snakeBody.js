@@ -11,68 +11,69 @@ function configureSnakeBody (radius, height, slices, texture) {
     var normals = [];
     var texCoords = [];
     var indices = [];
-
-    var bottom = -height / 2.0, top = height / 2.0;
     
-    for (var i = 0; i <= slices; i++) {
-        var angle = i * Math.PI / slices;
-        var nextAngle = (i + 1) * Math.PI / slices;
-        var x = radius * Math.cos(angle);
-        var y = radius * Math.sin(angle);
+    for (var i = 0; i < slices; i++) {
+        var bottom = -(height / 2) + (i * height / slices);
+        var top = -(height / 2) + ((i + 1) * height / slices);
+        
+        for (var j = 0; j <= slices; j++) {
+            var angle = j * Math.PI / slices;
+            var x = radius * Math.cos(angle);
+            var y = radius * Math.sin(angle);
 
-        var midAngle = (angle + nextAngle) / 2;
-        var sideNorm = vec4(Math.cos(midAngle), Math.sin(midAngle), 0.0, 1.0);
-        
-        var v1 = vec4(x, y, bottom, 1.0);
-        var v2 = vec4(x, y, top, 1.0);
-        
-        var n1 = sideNorm;
-        var n2 = sideNorm;
-        
-        var c1 = vec2 (-i / slices, 1.0);
-        var c2 = vec2 (-i / slices, 0.0);
-        
-        var verts = [], norms = [], coords = [];
+            var sideNorm = vec4(Math.cos(angle), Math.sin(angle), 0.0, 1.0);
 
-        if (i === 0){
+            var v1 = vec4(x, y, bottom, 1.0);
+            var v2 = vec4(x, y, top, 1.0);
+
+            var n1 = sideNorm;
+            var n2 = sideNorm;
+
+            var c1 = vec2 (-j / slices, -i / slices);
+            var c2 = vec2 (-j / slices, -(i +1) / slices);
+
+            var verts = [], norms = [], coords = [];
+
+            if (j === 0){
+                verts.push (v1);
+                norms.push (n1);
+                coords.push (c1);
+            }
+
             verts.push (v1);
             norms.push (n1);
             coords.push (c1);
-        }
 
-        verts.push (v1);
-        norms.push (n1);
-        coords.push (c1);
-
-        verts.push (v2);
-        norms.push (n2);
-        coords.push (c2);
-
-        if (i === slices){
             verts.push (v2);
             norms.push (n2);
             coords.push (c2);
-        }
 
-        for (var k = 0; k < verts.length; k ++) {
-            var ind = -1;
-            for (var z = 0; z < vertices.length; z++) {
-                if (verts[k][0] === vertices[z][0] &&
-                        verts[k][1] === vertices[z][1] &&
-                        verts[k][2] === vertices[z][2]) {
-                    if (coords[k][0] === texCoords[z][0] &&
-                            coords[k][1] === texCoords[z][1]) {
-                        ind = z;
-                        break;
+            if (j === slices){
+                verts.push (v2);
+                norms.push (n2);
+                coords.push (c2);
+            }
+
+            for (var k = 0; k < verts.length; k ++) {
+                var ind = -1;
+                for (var z = 0; z < vertices.length; z++) {
+                    if (verts[k][0] === vertices[z][0] &&
+                            verts[k][1] === vertices[z][1] &&
+                            verts[k][2] === vertices[z][2]) {
+                        if (coords[k][0] === texCoords[z][0] &&
+                                coords[k][1] === texCoords[z][1]) {
+                            ind = z;
+                            break;
+                        }
                     }
                 }
-            }
-            if (ind !== -1) indices.push (ind);
-            else {
-                indices.push (vertices.length);
-                vertices.push (verts[k]);
-                normals.push (norms[k]);
-                texCoords.push (coords[k]);
+                if (ind !== -1) indices.push (ind);
+                else {
+                    indices.push (vertices.length);
+                    vertices.push (verts[k]);
+                    normals.push (norms[k]);
+                    texCoords.push (coords[k]);
+                }
             }
         }
     }

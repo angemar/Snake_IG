@@ -45,8 +45,8 @@ function configureSnakeLeftBody (radius, slices, texture) {
             var n1 = vec4 (cross (subtract (nV2, nV1), subtract (nV1, v1)));
             var n2 = n1;
             
-            var c1 = vec2 (-j / slices, -i / slices);
-            var c2 = vec2 (-j / slices, -(i + 1) / slices);
+            var c1 = vec2 (j / slices, -i / slices);
+            var c2 = vec2 (j / slices, -(i + 1) / slices);
             
             var verts = [], norms = [], coords = [];
             
