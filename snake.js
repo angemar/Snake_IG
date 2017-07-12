@@ -4,8 +4,14 @@ function Snake () {
     var obst = mult(this.model, vec4(0.0, 0.0, 0.0, 1.0));
     this.obstacle = vec3(obst[0], obst[1], obst[2]);
     
+    this.vertices = function () { return Snake.vertices; };
+    this.normals = function () { return Snake.normals; };
+    this.texCoords = function () { return Snake.texCoords; };
+    this.indices = function () { return Snake.indices; };
+    this.parts = function () { return Snake.parts; };
+    
     this.move = function (step) {  
-        var parts = Snake.prototype.parts();
+        var parts = this.parts();
         parts[0].model=mult(parts[0].model, translate(0.0, 0.0, step));
         parts[0].modelNorm = normalMatrix(parts[0].model, false);
         configureSnake2(parts);
@@ -13,12 +19,12 @@ function Snake () {
     };
     
     this.changeDir = function(code){
-        if(code === 110) rotation('l');
-        else rotation('r');
+        if(code === 110) rotation(this, 'l');
+        else rotation(this, 'r');
     };
     
     this.aggiungi = function(){
-        var parts = Snake.prototype.parts();
+        var parts = this.parts();
         
         parts[0].model=mult(parts[0].model, translate(0.0, 0.0, 1.0));
         parts[0].modelNorm = normalMatrix(parts[0].model, false);  
@@ -27,8 +33,6 @@ function Snake () {
         configureSnake2(parts);
         
     };
-    
-   
 }
 
 function configureSnake (texture) {
@@ -70,17 +74,13 @@ function configureSnake2(parts){
         }
     }
     
-    var protos = [];
-    for (var i = 0; i < parts.length; i++)
-        protos.push (Object.getPrototypeOf(parts[i]));
-    
     var tot = 0;
     
-    for (var i = 0; i < protos.length; i++) {
-        var v = protos[i].vertices ();
-        var n = protos[i].normals ();
-        var t = protos[i].texCoords ();
-        var c = protos[i].indices ();
+    for (var i = 0; i < parts.length; i++) {
+        var v = parts[i].vertices ();
+        var n = parts[i].normals ();
+        var t = parts[i].texCoords ();
+        var c = parts[i].indices ();
 
         for (var j = 0; j < v.length; j++) {
             vertices.push (mult (parts[i].model, v[j]));
@@ -98,25 +98,18 @@ function configureSnake2(parts){
     Snake.texCoords = texCoords;
     Snake.indices = indices;
     Snake.parts = parts;
-    
-    Snake.prototype.vertices = function () { return Snake.vertices; };
-    Snake.prototype.normals = function () { return Snake.normals; };
-    Snake.prototype.texCoords = function () { return Snake.texCoords; };
-    Snake.prototype.indices = function () { return Snake.indices; };
-    Snake.prototype.parts = function () { return Snake.parts; };
-
 }
 
-function rotation(dir){
-    var parts = Snake.prototype.parts();
+function rotation(snake, dir){
+    var parts = snake.parts();
     
     if(parts[0].model[2][3] % 0.5 !==0){
-        var pos=parts[0].model[2][3] + 0.5;
+        var pos=parts[0].model[2][3] + 0.7;
         var x= Math.ceil(pos) - 0.5;
         parts[0].model[2][3]=x;
     }
     if(parts[0].model[0][3] % 0.5 !==0){
-        var pos=parts[0].model[0][3] + 0.5;
+        var pos=parts[0].model[0][3] - 0.7;
         var x= Math.ceil(pos) - 0.5;
         parts[0].model[0][3]=x;
     }

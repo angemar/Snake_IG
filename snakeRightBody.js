@@ -4,6 +4,12 @@ function SnakeRightBody (tranX, tranZ) {
 
     var obst = mult(this.model, vec4(0.0, 0.0, 0.0, 1.0));
     this.obstacle = vec3(obst[0], obst[1], obst[2]);
+    
+    this.vertices = function () { return SnakeRightBody.vertices; };
+    this.normals = function () { return SnakeRightBody.normals; };
+    this.texCoords = function () { return SnakeRightBody.texCoords; };
+    this.indices = function () { return SnakeRightBody.indices; };
+    this.texture = function () { return SnakeRightBody.texture; };
 }
 
 function configureSnakeRightBody (radius, slices, texture) {
@@ -103,19 +109,4 @@ function configureSnakeRightBody (radius, slices, texture) {
     SnakeRightBody.normals = normals;
     SnakeRightBody.texCoords = texCoords;
     SnakeRightBody.indices = indices;
-    
-    SnakeRightBody.prototype.vertices = function () { return SnakeRightBody.vertices; };
-    SnakeRightBody.prototype.normals = function () { return SnakeRightBody.normals; };
-    SnakeRightBody.prototype.texCoords = function () { return SnakeRightBody.texCoords; };
-    SnakeRightBody.prototype.indices = function () { return SnakeRightBody.indices; };
-    SnakeRightBody.prototype.texture = function () { return SnakeRightBody.texture; };
-
-    SnakeRightBody.prototype.collide = function (cylinder, other) {
-        var dist = subtract(cylinder.obstacle, other);
-        var distance = Math.sqrt(Math.pow(dist[0], 2) + Math.pow(dist[2], 2));
-        if (distance <= SnakeRightBody.radius + SnakeRightBody.radius * 0.5)
-            return normalize(dist);
-        else
-            return vec3(0.0, 0.0, 0.0);
-    };
 }

@@ -1,6 +1,12 @@
 function World (tranX, tranZ) {
     this.model = translate(tranX, 0.0, tranZ);
     this.modelNorm = normalMatrix(this.model, false);
+    
+    this.vertices = function () { return World.vertices; };
+    this.normals = function () { return World.normals; };
+    this.texCoords = function () { return World.texCoords; };
+    this.indices = function () { return World.indices; };
+    this.texture = function () { return World.texture; };
 }
 
 function configureWorld (width, height, slices, texture) {
@@ -85,10 +91,4 @@ function configureWorld (width, height, slices, texture) {
     World.normals = normals;
     World.texCoords = texCoords;
     World.indices = indices;
-    
-    World.prototype.vertices = function () { return World.vertices; };
-    World.prototype.normals = function () { return World.normals; };
-    World.prototype.texCoords = function () { return World.texCoords; };
-    World.prototype.indices = function () { return World.indices; };
-    World.prototype.texture = function () { return World.texture; };
 }

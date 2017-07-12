@@ -156,7 +156,7 @@ var render = function () {
     for (var i = 0; i < objKeys.length; i++) {
         if (objects[objKeys[i]].length === 0) continue;
         
-        var proto = Object.getPrototypeOf(objects[objKeys[i]][0]);
+        var proto = objects[objKeys[i]][0];
         
         gl.bindBuffer (gl.ELEMENT_ARRAY_BUFFER, iBuffer);
         gl.bufferData (gl.ELEMENT_ARRAY_BUFFER, proto.indices (), gl.DYNAMIC_DRAW);
@@ -188,7 +188,7 @@ var render = function () {
                 obj.model = mult(obj.model, Bonus.rotMat);
                 obj.modelNorm = normalMatrix(obj.model, false);
                 
-                obj.eat(objects['bonus'][0])
+                obj.eat(objects['snake'][0])
             }
             if (objKeys[i] !== 'world') {
                 gl.uniform1f(eyeDistLoc, length (subtract (obj.obstacle, eye)));

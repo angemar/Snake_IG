@@ -5,8 +5,14 @@ function Bonus (tranX, tranZ) {
     var obst = mult(this.model, vec4(0.0, 0.0, 0.0, 1.0));
     this.obstacle = vec3(obst[0], obst[1], obst[2]);
     
-     this.eat = function(){
-        var parts=Snake.prototype.parts();
+    this.vertices = function () { return Bonus.vertices; };
+    this.normals = function () { return Bonus.normals; };
+    this.texCoords = function () { return Bonus.texCoords; };
+    this.indices = function () { return Bonus.indices; };
+    this.texture = function () { return Bonus.texture; };
+    
+     this.eat = function(snake){
+        var parts = snake.parts();
         var x1=parts[0].model[0][3];
         var x2=this.model[0][3];
         var y1=parts[0].model[2][3];
@@ -16,7 +22,7 @@ function Bonus (tranX, tranZ) {
             var y= Math.floor((Math.random() * 50) - 24.5) + 0.5;
             objects['bonus'].pop();
             objects['bonus'].push(new Bonus(x, y));
-            objects["snake"][0].aggiungi();
+            snake.aggiungi();
         }
     };
 }
@@ -107,19 +113,4 @@ function configureBonus (radius, slices, rotAngle, texture) {
     Bonus.normals = normals;
     Bonus.texCoords = texCoords;
     Bonus.indices = indices;
-    
-    Bonus.prototype.vertices = function () { return Bonus.vertices; };
-    Bonus.prototype.normals = function () { return Bonus.normals; };
-    Bonus.prototype.texCoords = function () { return Bonus.texCoords; };
-    Bonus.prototype.indices = function () { return Bonus.indices; };
-    Bonus.prototype.texture = function () { return Bonus.texture; };
-
-    Bonus.prototype.collide = function (tail, other) {
-        var dist = subtract(tail.obstacle, other);
-        var distance = Math.sqrt(Math.pow(dist[0], 2) + Math.pow(dist[2], 2));
-        if (distance <= Bonus.radius + Bonus.radius * 0.5)
-            return normalize(dist);
-        else
-            return vec3(0.0, 0.0, 0.0);
-    };
 }

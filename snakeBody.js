@@ -4,6 +4,12 @@ function SnakeBody (tranX, tranZ) {
 
     var obst = mult(this.model, vec4(0.0, 0.0, 0.0, 1.0));
     this.obstacle = vec3(obst[0], obst[1], obst[2]);
+    
+    this.vertices = function () { return SnakeBody.vertices; };
+    this.normals = function () { return SnakeBody.normals; };
+    this.texCoords = function () { return SnakeBody.texCoords; };
+    this.indices = function () { return SnakeBody.indices; };
+    this.texture = function () { return SnakeBody.texture; };
 }
 
 function configureSnakeBody (radius, height, slices, texture) {
@@ -88,19 +94,4 @@ function configureSnakeBody (radius, height, slices, texture) {
     SnakeBody.normals = normals;
     SnakeBody.texCoords = texCoords;
     SnakeBody.indices = indices;
-    
-    SnakeBody.prototype.vertices = function () { return SnakeBody.vertices; };
-    SnakeBody.prototype.normals = function () { return SnakeBody.normals; };
-    SnakeBody.prototype.texCoords = function () { return SnakeBody.texCoords; };
-    SnakeBody.prototype.indices = function () { return SnakeBody.indices; };
-    SnakeBody.prototype.texture = function () { return SnakeBody.texture; };
-
-    SnakeBody.prototype.collide = function (cylinder, other) {
-        var dist = subtract(cylinder.obstacle, other);
-        var distance = Math.sqrt(Math.pow(dist[0], 2) + Math.pow(dist[2], 2));
-        if (distance <= SnakeBody.radius + SnakeBody.radius * 0.5)
-            return normalize(dist);
-        else
-            return vec3(0.0, 0.0, 0.0);
-    };
 }

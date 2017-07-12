@@ -4,6 +4,12 @@ function SnakeHead (tranX, tranZ) {
 
     var obst = mult(this.model, vec4(0.0, 0.0, 0.0, 1.0));
     this.obstacle = vec3(obst[0], obst[1], obst[2]);
+    
+    this.vertices = function () { return SnakeHead.vertices; };
+    this.normals = function () { return SnakeHead.normals; };
+    this.texCoords = function () { return SnakeHead.texCoords; };
+    this.indices = function () { return SnakeHead.indices; };
+    this.texture = function () { return SnakeHead.texture; };
 }
 
 function configureSnakeHead (radius1, radius2, slices, texture) {
@@ -92,19 +98,4 @@ function configureSnakeHead (radius1, radius2, slices, texture) {
     SnakeHead.normals = normals;
     SnakeHead.texCoords = texCoords;
     SnakeHead.indices = indices;
-    
-    SnakeHead.prototype.vertices = function () { return SnakeHead.vertices; };
-    SnakeHead.prototype.normals = function () { return SnakeHead.normals; };
-    SnakeHead.prototype.texCoords = function () { return SnakeHead.texCoords; };
-    SnakeHead.prototype.indices = function () { return SnakeHead.indices; };
-    SnakeHead.prototype.texture = function () { return SnakeHead.texture; };
-
-    SnakeHead.prototype.collide = function (tail, other) {
-        var dist = subtract(tail.obstacle, other);
-        var distance = Math.sqrt(Math.pow(dist[0], 2) + Math.pow(dist[2], 2));
-        if (distance <= SnakeHead.height + SnakeHead.height * 0.25)
-            return normalize(dist);
-        else
-            return vec3(0.0, 0.0, 0.0);
-    };
 }
