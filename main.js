@@ -13,7 +13,7 @@ for(var i=0; i<height; i++){
     }
 }
 
-var objects = {'snake' : [], 'bonus' : [], 'world' : []};
+var objects = {'snake' : [], 'bonus' : [], 'world' : [], 'sea' : []};
 var objKeys = [];
 
 var vBuffer, nBuffer, tBuffer, iBuffer;
@@ -91,6 +91,11 @@ window.onload = function () {
     worldImage.onload = function () { loadTexture (worldTex, worldImage); };
     worldImage.src = 'grass_512.jpg';
     
+    var seaTex = gl.createTexture();
+    var seaImage = new Image ();
+    seaImage.onload = function () { loadTexture (seaTex, seaImage); };
+    seaImage.src = 'sea_512.jpg';
+    
     configureSnake (snakeTex);
     objects['snake'].push (new Snake());
     
@@ -99,7 +104,10 @@ window.onload = function () {
     matrix[0][3] = 'b';
     
     configureWorld (height, width, 30, worldTex);
-    objects['world'].push (new World (0.0, 0.0));
+    objects['world'].push (new World ());
+    
+    configureSea (100, 100, 25, seaTex);
+    objects['sea'].push (new Sea ());
     
     if (canvas.width < canvas.height) aspect = canvas.height / canvas.width;
     else aspect = canvas.width / canvas.height;
@@ -194,15 +202,14 @@ var render = function () {
         for (var j = 0; j < objects[objKeys[i]].length; j++) {
             var obj = objects[objKeys[i]][j];
             if(objKeys[i] === 'snake'){
-                obj.move(0.005);
+                obj.move(0.05);
             }
             if(objKeys[i] === 'bonus') { 
                 obj.model = mult(obj.model, Bonus.rotMat);
                 obj.modelNorm = normalMatrix(obj.model, false);
-                
-                obj.eat(objects['snake'][0])
+                obj.eat(objects['snake'][0]);
             }
-            if (objKeys[i] !== 'world') {
+            if (objKeys[i] !== 'world' && objKeys[i] !== 'sea') {
                 gl.uniform1f(eyeDistLoc, length (subtract (obj.obstacle, eye)));
             }
             else{

@@ -1,15 +1,15 @@
-function World () {
-    this.model = translate(0.0, 0.0, 0.0);
+function Sea () {
+    this.model = translate(0.0, -0.1, 0.0);
     this.modelNorm = normalMatrix(this.model, false);
     
-    this.vertices = function () { return World.vertices; };
-    this.normals = function () { return World.normals; };
-    this.texCoords = function () { return World.texCoords; };
-    this.indices = function () { return World.indices; };
-    this.texture = function () { return World.texture; };
+    this.vertices = function () { return Sea.vertices; };
+    this.normals = function () { return Sea.normals; };
+    this.texCoords = function () { return Sea.texCoords; };
+    this.indices = function () { return Sea.indices; };
+    this.texture = function () { return Sea.texture; };
 }
 
-function configureWorld (width, height, slices, texture) {
+function configureSea (width, height, slices, texture) {
     var vertices = [];
     var normals = [];
     var texCoords = [];
@@ -82,13 +82,13 @@ function configureWorld (width, height, slices, texture) {
     }
     indices = new Uint16Array(indices);
     
-    World.width = width;
-    World.height = height;
-    World.slices = slices;
-    World.texture = texture;
+    Sea.width = width;
+    Sea.height = height;
+    Sea.slices = slices;
+    Sea.texture = texture;
 
-    World.vertices = vertices;
-    World.normals = normals;
-    World.texCoords = texCoords;
-    World.indices = indices;
+    Sea.vertices = vertices;
+    Sea.normals = normals;
+    Sea.texCoords = texCoords;
+    Sea.indices = indices;
 }
