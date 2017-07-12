@@ -2,6 +2,17 @@
 
 var gl, program;
 
+var height=30, width=30;
+
+var matrix = [];
+
+for(var i=0; i<height; i++){
+    matrix.push([]);
+    for(var j=0;j<width;j++){
+        matrix[i].push('0');
+    }
+}
+
 var objects = {'snake' : [], 'bonus' : [], 'world' : []};
 var objKeys = [];
 
@@ -85,8 +96,9 @@ window.onload = function () {
     
     configureBonus (0.23, 30, 2, bonusTex);
     objects['bonus'].push (new Bonus (0.5, 3.5));
+    matrix[0][3] = 'b';
     
-    configureWorld (50, 50, 50, worldTex);
+    configureWorld (height, width, 30, worldTex);
     objects['world'].push (new World (0.0, 0.0));
     
     if (canvas.width < canvas.height) aspect = canvas.height / canvas.width;
