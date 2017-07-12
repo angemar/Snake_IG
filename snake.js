@@ -12,15 +12,21 @@ function Snake () {
     
     this.move = function (step) {  
         var parts = this.parts();
+        matrix[Math.floor(parts[0].model[0][3])+15][Math.floor(parts[0].model[2][3])+15]='0';
         parts[0].model=mult(parts[0].model, translate(0.0, 0.0, step));
         parts[0].modelNorm = normalMatrix(parts[0].model, false);
+         matrix[Math.floor(parts[0].model[0][3])+15][Math.floor(parts[0].model[2][3])+15]='h';
         configureSnake2(parts);
         
     };
     
     this.changeDir = function(code){
-        if(code === 110) rotation(this, 'l');
-        else rotation(this, 'r');
+        matrix[Math.floor(this.parts()[0].model[0][3])+15][Math.floor(this.parts()[0].model[2][3])+15]='0';
+        if(code === 110) {
+            rotation(this, 'l');
+        }else{ 
+            rotation(this, 'r');
+        }
     };
     
     this.aggiungi = function(){
@@ -103,16 +109,26 @@ function configureSnake2(parts){
 function rotation(snake, dir){
     var parts = snake.parts();
     
-    if(parts[0].model[2][3] % 0.5 !==0){
+    if(Math.abs(parts[0].model[2][3]+0.2 - Math.floor(parts[0].model[2][3])) > 0.1 || 
+            Math.abs(parts[0].model[2][3]+0.2 - Math.floor(parts[0].model[2][3])) > 0.1){
+        flagRotate = dir;
+        //return;
+    }
+    flagRotate=0;
+    console.log(flagRotate+ " "+parts[0].model[2][3] + " " +parts[0].model[0][3] );
+    
+    parts[0].model[0][3] = Math.ceil(parts[0].model[0][3]) - 0.5;
+    parts[0].model[2][3] = Math.ceil(parts[0].model[2][3]) - 0.5;
+    /*if((parts[0].model[2][3] / 0.5) %2 !== 1){
         var pos=parts[0].model[2][3] + 0.7;
         var x= Math.ceil(pos) - 0.5;
         parts[0].model[2][3]=x;
     }
-    if(parts[0].model[0][3] % 0.5 !==0){
+    if((parts[0].model[2][3] / 0.5) %2 !== 1){
         var pos=parts[0].model[0][3] - 0.7;
         var x= Math.ceil(pos) - 0.5;
         parts[0].model[0][3]=x;
-    }
+    }*/
     
     var obj;
     if(dir === 'l'){
@@ -132,12 +148,8 @@ function rotation(snake, dir){
     if( dir === 'l') parts[0].model = mult(parts[0].model , rotate(90, 0.0, 1.0, 0.0));
     else parts[0].model = mult(parts[0].model , rotate(-90, 0.0, 1.0, 0.0));
     
-    
     parts[0].model = mult(parts[0].model , translate(0.0, 0.0, 1.0));
-    
-   
     parts[0].modelNorm = normalMatrix(parts[0].model, false);
-    
-    
+
     configureSnake2(parts);
 }
