@@ -15,7 +15,7 @@ function Snake () {
     this.parts = function () { return Snake.parts; };
     this.texture = function () { return Snake.texture; };
     
-    this.tailModel = 
+    this.tailModel = null;
     
     this.move = function () {
         var parts = Snake.parts;
