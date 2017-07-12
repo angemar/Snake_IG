@@ -21,6 +21,9 @@ var vPosition, vNormal, vTexCoord;
 
 var objPath = "../objects/";
 
+var moveVar = 0;
+var freqVar = 15;
+
 var yaw = 0.0;
 var pitch = -30.0 * Math.PI / 180.0;
 
@@ -96,7 +99,7 @@ window.onload = function () {
     seaImage.onload = function () { loadTexture (seaTex, seaImage); };
     seaImage.src = 'sea_512.jpg';
     
-    configureSnake (snakeTex);
+    configureSnake (15, snakeTex);
     objects['snake'].push (new Snake());
     
     configureBonus (0.23, 30, 2, bonusTex);
@@ -160,8 +163,13 @@ window.onload = function () {
     
 };
 
+var tmp = 0;
+
 var render = function () { 
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+    
+    if (moveVar % freqVar === 0) objects['snake'][0].move();
+    moveVar += 1;
     
     move (keys, keysKeys);
     
@@ -201,9 +209,6 @@ var render = function () {
         
         for (var j = 0; j < objects[objKeys[i]].length; j++) {
             var obj = objects[objKeys[i]][j];
-            if(objKeys[i] === 'snake'){
-                obj.move(0.05);
-            }
             if(objKeys[i] === 'bonus') { 
                 obj.model = mult(obj.model, Bonus.rotMat);
                 obj.modelNorm = normalMatrix(obj.model, false);
