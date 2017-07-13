@@ -2,11 +2,20 @@ function Sea () {
     this.model = translate(0.0, -0.1, 0.0);
     this.modelNorm = normalMatrix(this.model, false);
     
+    this.seaWave = 0;
+    
     this.vertices = function () { return Sea.vertices; };
     this.normals = function () { return Sea.normals; };
     this.texCoords = function () { return Sea.texCoords; };
     this.indices = function () { return Sea.indices; };
     this.texture = function () { return Sea.texture; };
+    
+    this.move = function () {
+        var seaCoords = Sea.texCoords;
+        for(var i = 0; i < seaCoords.length; i++)
+            seaCoords[i][1] += 0.001 * Math.sin(this.seaWave * Math.PI / 180.0);
+        this.seaWave = (this.seaWave + 1) % 360;
+    }
 }
 
 function configureSea (width, height, slices, texture) {

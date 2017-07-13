@@ -125,7 +125,7 @@ window.onload = function () {
     seaImage.onload = function () { loadTexture (seaTex, seaImage); };
     seaImage.src = 'sea_512.jpg';
     
-    configureSnake (15, snakeTex);
+    configureSnake (20, snakeTex);
     objects['snake'].push (new Snake());
     
     configureBonus (0.23, 30, 2, bonusTex);
@@ -189,8 +189,6 @@ window.onload = function () {
     
 };
 
-var tmp = 0;
-
 var render = function () { 
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
     
@@ -198,7 +196,11 @@ var render = function () {
     moveVar += 1;
     
     move (keys, keysKeys);
+    
     draw();
+    
+    objects['sea'][0].move();
+        
     
     gl.uniformMatrix4fv(viewLoc, false, flatten(view));
     gl.uniformMatrix4fv(viewNormLoc, false, flatten(viewNorm));
@@ -234,16 +236,8 @@ var render = function () {
         gl.bindTexture(gl.TEXTURE_2D, proto.texture ());
         gl.uniform1i(gl.getUniformLocation(program, "tex"), 0);
         
-        var seaCoords = Sea.texCoords;
-        for(var ind=0; ind<seaCoords.length; ind++)
-            seaCoords[ind][1] += 0.0015;
-        
-        
         for (var j = 0; j < objects[objKeys[i]].length; j++) {
             var obj = objects[objKeys[i]][j];
-            if(objKeys[i] === 'snake'){
-                if(flagRotate !== 0) obj.changeDir(flagRotate);
-            }
             if(objKeys[i] === 'bonus') { 
                 obj.model = mult(obj.model, Bonus.rotMat);
                 obj.modelNorm = normalMatrix(obj.model, false);
@@ -252,9 +246,8 @@ var render = function () {
             if (objKeys[i] !== 'world' && objKeys[i] !== 'sea') {
                 gl.uniform1f(eyeDistLoc, length (subtract (obj.obstacle, eye)));
             }
-            else{
-                gl.uniform1f(eyeDistLoc, 0.0);               
-            }
+            else gl.uniform1f(eyeDistLoc, 0.0);
+            
             gl.uniformMatrix4fv(modelLoc, false, flatten(obj.model));
             gl.uniformMatrix4fv(modelNormLoc, false, flatten(obj.modelNorm));
             gl.drawElements(gl.TRIANGLE_STRIP, proto.indices().length, gl.UNSIGNED_SHORT, 0);
