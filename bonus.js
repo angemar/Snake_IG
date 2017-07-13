@@ -21,13 +21,13 @@ function Bonus (tranX, tranZ) {
             var o = objects['bonus'].pop();
             matrix[Math.floor(o.model[0][3])+15][Math.floor(o.model[2][3])+15] = '0';
             do{
-                var x= Math.floor((Math.random() * 30) - 14.5) + 0.5;
-                var y= Math.floor((Math.random() * 30) - 14.5) + 0.5;
+                var x= Math.floor((Math.random() * 29)) - 14.5;
+                var y= Math.floor((Math.random() * 29)) - 14.5;
             }while(matrix[Math.floor(x)+15][Math.floor(y)+15] !== '0');
             
             objects['bonus'].push(new Bonus(x, y));
             matrix[Math.floor(x)+15][Math.floor(y)+15] = 'b';
-            snake.aggiungi();
+            Snake.eating = true;
         }
     };
 }

@@ -4,6 +4,21 @@ function SnakeTail (tranX, tranZ) {
 
     var obst = mult(this.model, vec4(0.0, 0.0, 0.0, 1.0));
     this.obstacle = vec3(obst[0], obst[1], obst[2]);
+    
+    this.slices = function () { return SnakeTail.slices; };
+    this.vertices = function () { return SnakeTail.vertices; };
+    this.normals = function () { return SnakeTail.normals; };
+    this.texCoords = function () { return SnakeTail.texCoords; };
+    this.indices = function () { return SnakeTail.indices; };
+    this.texture = function () { return SnakeTail.texture; };
+    
+    this.indices = function (begin, end) {
+        var indices = SnakeTail.indices;
+        var slices = this.slices ();
+        var start = begin * indices.length / slices;
+        var stop = end * indices.length / slices;
+        return SnakeTail.indices.slice (start, stop);
+    };
 }
 
 function configureSnakeTail (radius1, radius2, slices, texture) {
@@ -93,19 +108,4 @@ function configureSnakeTail (radius1, radius2, slices, texture) {
     SnakeTail.normals = normals;
     SnakeTail.texCoords = texCoords;
     SnakeTail.indices = indices;
-    
-    SnakeTail.prototype.vertices = function () { return SnakeTail.vertices; };
-    SnakeTail.prototype.normals = function () { return SnakeTail.normals; };
-    SnakeTail.prototype.texCoords = function () { return SnakeTail.texCoords; };
-    SnakeTail.prototype.indices = function () { return SnakeTail.indices; };
-    SnakeTail.prototype.texture = function () { return SnakeTail.texture; };
-
-    SnakeTail.prototype.collide = function (tail, other) {
-        var dist = subtract(tail.obstacle, other);
-        var distance = Math.sqrt(Math.pow(dist[0], 2) + Math.pow(dist[2], 2));
-        if (distance <= SnakeTail.radius + SnakeTail.radius * 0.5)
-            return normalize(dist);
-        else
-            return vec3(0.0, 0.0, 0.0);
-    };
 }

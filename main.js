@@ -4,8 +4,9 @@ var gl, program;
 
 var height=30, width=30;
 
-var matrix = [];
+var flagRotate = 0;
 
+var matrix = [];
 for(var i=0; i<height; i++){
     matrix.push([]);
     for(var j=0;j<width;j++){
@@ -22,7 +23,7 @@ var vPosition, vNormal, vTexCoord;
 var objPath = "../objects/";
 
 var moveVar = 0;
-var freqVar = 15;
+var freqVar = 5;
 
 var yaw = 0.0;
 var pitch = -30.0 * Math.PI / 180.0;
@@ -61,6 +62,31 @@ function loadTexture (texture, image) {
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST_MIPMAP_LINEAR);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
 }
+
+function draw() {
+    var ctx = document.getElementById('gl-canvas1').getContext('2d');
+    				
+    for (var i = 0; i <30 ; i++) {
+		for (var j = 0; j < 30; j++) {
+    
+    
+     if(matrix[i][j]=='b'){                                    
+		 ctx.fillStyle = "rgb(255,0,0)";
+	  }
+	 else if(matrix[i][j]=='h'){
+	   ctx.fillStyle ="rgb(220,220,220)"
+	  }
+	  
+	  else{
+		 ctx.fillStyle ="rgb(0,0,0)"
+	  }
+	  
+     ctx.fillRect((29-i)*3 , (29-j) * 3, 3 ,3);
+    }
+   
+  }
+}  
+
 
 window.onload = function () {
     var canvas = document.getElementById("gl-canvas");
@@ -104,7 +130,7 @@ window.onload = function () {
     
     configureBonus (0.23, 30, 2, bonusTex);
     objects['bonus'].push (new Bonus (0.5, 3.5));
-    matrix[0][3] = 'b';
+    matrix[15][18] = 'b';
     
     configureWorld (height, width, 30, worldTex);
     objects['world'].push (new World ());
@@ -172,6 +198,7 @@ var render = function () {
     moveVar += 1;
     
     move (keys, keysKeys);
+    draw();
     
     gl.uniformMatrix4fv(viewLoc, false, flatten(view));
     gl.uniformMatrix4fv(viewNormLoc, false, flatten(viewNorm));
@@ -207,8 +234,16 @@ var render = function () {
         gl.bindTexture(gl.TEXTURE_2D, proto.texture ());
         gl.uniform1i(gl.getUniformLocation(program, "tex"), 0);
         
+        var seaCoords = Sea.texCoords;
+        for(var ind=0; ind<seaCoords.length; ind++)
+            seaCoords[ind][1] += 0.0015;
+        
+        
         for (var j = 0; j < objects[objKeys[i]].length; j++) {
             var obj = objects[objKeys[i]][j];
+            if(objKeys[i] === 'snake'){
+                if(flagRotate !== 0) obj.changeDir(flagRotate);
+            }
             if(objKeys[i] === 'bonus') { 
                 obj.model = mult(obj.model, Bonus.rotMat);
                 obj.modelNorm = normalMatrix(obj.model, false);

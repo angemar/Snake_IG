@@ -4,10 +4,6 @@ function Snake () {
     var obst = mult(this.model, vec4(0.0, 0.0, 0.0, 1.0));
     this.obstacle = vec3(obst[0], obst[1], obst[2]);
     
-    this.eating = false;
-    this.turningLeft = false;
-    this.turningRight = false;
-    
     this.vertices = function () { return Snake.vertices; };
     this.normals = function () { return Snake.normals; };
     this.texCoords = function () { return Snake.texCoords; };
@@ -15,29 +11,79 @@ function Snake () {
     this.parts = function () { return Snake.parts; };
     this.texture = function () { return Snake.texture; };
     
-    this.tailModel = null;
-    
     this.move = function () {
         var parts = Snake.parts;
         var len = parts.length;
         
+        //matrix[Math.floor(parts[0].model[0][3])+15][Math.floor(parts[0].model[2][3])+15]='0';
+        //matrix[Math.floor(parts[0].model[0][3])+15][Math.floor(parts[0].model[2][3])+15]='h';
+        
         if (Snake.step === 0) {
-            parts.splice (1, 0, new SnakeBody(0.0, 0.0));
+            Snake.turnLeftAnim = false;
+            Snake.turnRightAnim = false;
+            Snake.eatAnim = false;
+            
+            if (Snake.turningLeft) {
+                parts.splice (1, 0, new SnakeLeftBody(0.0, 0.0));
+                Snake.turningLeft = false;
+                Snake.turnLeftAnim = true;
+            }
+            else if (Snake.turningRight) {
+                parts.splice (1, 0, new SnakeRightBody(0.0, 0.0));
+                Snake.turningRight = false;
+                Snake.turnRightAnim = true;
+            }
+            else parts.splice (1, 0, new SnakeBody(0.0, 0.0));
+            
+            if (Snake.eating === true) {
+                Snake.eating = false;
+                Snake.eatAnim = true;
+            }
+                
             parts[1].model = parts[0].model;
             parts[1].normal = parts[0].normal;
             len += 1;
-            if (!this.eating) {
+            
+            if (!Snake.eatAnim) {
                 parts.splice (len - 2, 1);
                 len -= 1;
             }
-            this.eating = false;
         }
         
-        parts[0].model = mult(parts[0].model, translate(0.0, 0.0, 1.0 / Snake.slices));
+        if (Snake.turnLeftAnim) {
+            var mat = mult (rotateY (-90 / Snake.slices),
+                            translate (0.0, 0.0, 1.0 / Snake.slices));
+            parts[0].model = mult(parts[0].model, mat);
+        }
+        else if (Snake.turnRightAnim) {
+            var mat = mult (rotateY (90 / Snake.slices),
+                            translate (0.0, 0.0, 1.0 / Snake.slices));
+            parts[0].model = mult(parts[0].model, mat);
+        }
+        else {
+            var mat = translate (0.0, 0.0, 1.0 / Snake.slices);
+            parts[0].model = mult(parts[0].model, mat);
+        }
+        
+        if (!Snake.eatAnim) {
+            if (parts[len - 2] instanceof SnakeLeftBody) {
+                var mat = mult (rotateY (-90 / Snake.slices),
+                                translate (0.0, 0.0, 1.0 / Snake.slices));
+                parts[len - 1].model = mult(parts[len - 1].model, mat);
+            }
+            else if (parts[len - 2] instanceof SnakeRightBody) {
+                var mat = mult (rotateY (90 / Snake.slices),
+                                translate (0.0, 0.0, 1.0 / Snake.slices));
+                parts[len - 1].model = mult(parts[len - 1].model, mat);
+            }
+            else {
+                var mat = translate (0.0, 0.0, 1.0 / Snake.slices);
+                parts[len - 1].model = mult(parts[len - 1].model, mat);
+            }
+        }
+        
         parts[0].modelNorm = normalMatrix(parts[0].model, false);
-        parts[len - 1].model = mult(parts[len - 1].model,
-                                    translate(0.0, 0.0, 1.0 / Snake.slices));
-        parts[len - 1].normal = normalMatrix(parts[len - 1].model, 0);
+        parts[len - 1].modelNorm = normalMatrix(parts[len - 1].model, 0);
         
         var vertices = [];
         var normals = [];
@@ -51,8 +97,10 @@ function Snake () {
             var t = parts[i].texCoords ();
             var c = [];
             if (i === 1) c = parts[i].indices (0, Snake.step + 1);
-            else if (i === parts.length -2)
-                c = parts[i].indices (Snake.step, Snake.slices);
+            else if (i === parts.length -2) {
+                if (Snake.eatAnim) c = parts[i].indices (Snake.slices, Snake.slices);
+                else c = parts[i].indices (Snake.step, Snake.slices);
+            }
             else c = parts[i].indices (0, Snake.slices);
 
             for (var j = 0; j < v.length; j++) {
@@ -75,22 +123,6 @@ function Snake () {
         
         Snake.step = (Snake.step + 1) % (Snake.slices);
     };
-    
-    this.changeDir = function(code){
-        //if(code === 110) rotation(this, 'l');
-        //else rotation(this, 'r');
-    };
-    
-    this.aggiungi = function(){
-        var parts = Snake.parts;
-        
-        parts[0].model=mult(parts[0].model, translate(0.0, 0.0, 1.0));
-        parts[0].modelNorm = normalMatrix(parts[0].model, false);  
-        
-        parts.splice(1, 0, new SnakeBody(0.0, 0.0));
-        configureSnake2(parts);
-        
-    };
 }
 
 function configureSnake (slices, texture) {
@@ -112,46 +144,12 @@ function configureSnake (slices, texture) {
     Snake.slices = slices;
     Snake.texture = texture;
     Snake.parts = parts;
-}
-
-function rotation(snake, dir){
-    var parts = snake.parts();
     
-    if(parts[0].model[2][3] % 0.5 !==0){
-        var pos=parts[0].model[2][3] + 0.7;
-        var x= Math.ceil(pos) - 0.5;
-        parts[0].model[2][3]=x;
-    }
-    if(parts[0].model[0][3] % 0.5 !==0){
-        var pos=parts[0].model[0][3] - 0.7;
-        var x= Math.ceil(pos) - 0.5;
-        parts[0].model[0][3]=x;
-    }
+    Snake.eating = false;
+    Snake.turningLeft = false;
+    Snake.turningRight = false;
     
-    var obj;
-    if(dir === 'l'){
-        obj = new SnakeLeftBody(0.0, 0.0);
-        obj.model = parts[0].model;
-    }else{
-        obj = new SnakeRightBody(0.0, 0.0);
-        obj.model = parts[0].model;
-    }
-    
-    obj.modelNorm = normalMatrix(obj.model, false); 
-    
-    parts.splice(1, 0, obj);
-    
-     
-    //while(parts[0].model[0][3] % 0.5 !==0 && parts[0].model[2][3] % 0.5 !==0){};
-    if( dir === 'l') parts[0].model = mult(parts[0].model , rotate(90, 0.0, 1.0, 0.0));
-    else parts[0].model = mult(parts[0].model , rotate(-90, 0.0, 1.0, 0.0));
-    
-    
-    parts[0].model = mult(parts[0].model , translate(0.0, 0.0, 1.0));
-    
-   
-    parts[0].modelNorm = normalMatrix(parts[0].model, false);
-    
-    
-    configureSnake2(parts);
+    Snake.eatAnim = false;
+    Snake.turnLeftAnim = false;
+    Snake.turnRightAnim = false;
 }

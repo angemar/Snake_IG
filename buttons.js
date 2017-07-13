@@ -31,12 +31,18 @@ function configureButtons(document, gl, program) {
     };
     
     document.onkeypress = function(e){
+        e = e || window.event;
         var code = e.charCode; 
-        if(code === 109 || code === 110)
-            objects["snake"][0].changeDir(code);
-        if(code === 32)
-            objects["snake"][0].aggiungi();
-        
+        if(code === 110) { // N
+            if (!Snake.turningRight)
+                Snake.turningLeft = true;
+            return
+        }
+        if (code === 109) { // M
+            if (!Snake.turningLeft)
+                Snake.turningRight = true;
+            return;
+        }
     };
 
     gl.uniform1f(dirOnLoc, 1.0);

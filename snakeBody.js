@@ -5,11 +5,18 @@ function SnakeBody (tranX, tranZ) {
     var obst = mult(this.model, vec4(0.0, 0.0, 0.0, 1.0));
     this.obstacle = vec3(obst[0], obst[1], obst[2]);
     
+    this.slices = function () { return SnakeBody.slices; };
     this.vertices = function () { return SnakeBody.vertices; };
     this.normals = function () { return SnakeBody.normals; };
     this.texCoords = function () { return SnakeBody.texCoords; };
-    this.indices = function () { return SnakeBody.indices; };
     this.texture = function () { return SnakeBody.texture; };
+    this.indices = function (begin, end) {
+        var indices = SnakeBody.indices;
+        var slices = this.slices ();
+        var start = begin * indices.length / slices;
+        var stop = end * indices.length / slices;
+        return SnakeBody.indices.slice (start, stop);
+    };
 }
 
 function configureSnakeBody (radius, height, slices, texture) {
