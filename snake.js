@@ -15,8 +15,8 @@ function Snake () {
         var parts = Snake.parts;
         var len = parts.length;
         
-        /*for(var i=0; i<len; i++)
-            matrix[Math.floor(parts[i].model[0][3])+ height / 2][Math.floor(parts[i].model[2][3])+ width / 2]='0';*/
+        for(var i=0; i<len; i++)
+            matrix[Math.floor(parts[i].model[0][3])+ height / 2][Math.floor(parts[i].model[2][3])+ width / 2]='0';
        
         if (Snake.step === 0) {
             Snake.turnLeftAnim = false;
@@ -183,6 +183,7 @@ function Snake () {
         Snake.indices = indices;
         
         matrix[Math.floor(parts[0].model[0][3])+height/2][Math.floor(parts[0].model[2][3])+width/2]='h';
+        matrix[Math.floor(parts[1].model[0][3])+height/2][Math.floor(parts[1].model[2][3])+width/2]='h1';
         for(var i=2; i<len; i++){
             matrix[Math.floor(parts[i].model[0][3])+height/2][Math.floor(parts[i].model[2][3])+width/2]='s';
         }

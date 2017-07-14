@@ -71,9 +71,9 @@ function draw() {
     for (var i = 0; i < height; i++) {
         for (var j = 0; j < width; j++) {
 			
-            if (matrix[i][j] === 'b'){
-                ctx.fillStyle = "rgb(255,0,0)"; console.log(i+" "+j);}
-            else if (matrix[i][j] === 'h')
+            if (matrix[i][j] === 'b')
+                ctx.fillStyle = "rgb(255,0,0)"; 
+            else if (matrix[i][j] === 'h' || matrix[i][j] === 'h1')
                 ctx.fillStyle = "rgb(220,220,220)";
             else ctx.fillStyle = "rgb(0,0,0)";
             
