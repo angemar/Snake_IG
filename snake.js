@@ -163,22 +163,23 @@ function Snake () {
         Snake.normals = normals;
         Snake.texCoords = texCoords;
         Snake.indices = indices;
-        /*
-        matrix[Math.floor(parts[0].model[0][3])+15][Math.floor(parts[0].model[2][3])+15]='h';
+        
+        matrix[Math.floor(parts[0].model[0][3])+10][Math.floor(parts[0].model[2][3])+10]='h';
         for(var i=2; i<len; i++){
-            matrix[Math.floor(parts[i].model[0][3])+15][Math.floor(parts[i].model[2][3])+15]='s';
+            matrix[Math.floor(parts[i].model[0][3])+10][Math.floor(parts[i].model[2][3])+10]='s';
         }
         
         
-        if(matrix[Math.floor(parts[0].model[0][3])+15][Math.floor(parts[0].model[2][3])+15] === 's' ||
-                Math.floor(parts[0].model[0][3]) +15 < 0 ||
-                Math.floor(parts[0].model[0][3])+15 > width-1 ||
-                Math.floor(parts[0].model[2][3])+15 < 0 ||
-                Math.floor(parts[0].model[2][3])+15 > height-1) {
+        if(matrix[Math.floor(parts[0].model[0][3])+height / 2][Math.floor(parts[0].model[2][3])+width/2] === 's' ||
+                Math.floor(parts[0].model[0][3]) +height / 2 < 0 ||
+                Math.floor(parts[0].model[0][3])+height / 2 > width-1 ||
+                Math.floor(parts[0].model[2][3])+height / 2< 0 ||
+                Math.floor(parts[0].model[2][3])+height / 2 > height-1) {
             alert("Game Over! Press OK to restart the game!");
-            configureSnake(20, this.texture());
-            objects['snake'][0] = new Snake();
-        }*/
+            window.reload();
+            //configureSnake(height, this.texture());
+            //objects['snake'][0] = new Snake();
+        }
         
         Snake.step = (Snake.step + 1) % (Snake.slices);
     };

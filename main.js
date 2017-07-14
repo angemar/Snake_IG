@@ -1,6 +1,8 @@
 "use strict";
 
 var gl, program;
+var label;
+var points=0, winPoints=300;
 
 var height=20, width=20;
 
@@ -84,6 +86,10 @@ function draw() {
 }
 
 window.onload = function () {
+	
+	
+    label = document.getElementById("label") ; 
+	
     var canvas = document.getElementById("gl-canvas");
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
@@ -127,8 +133,8 @@ window.onload = function () {
     
     configureBonus (0.23, 30, 2, bonusTex);
     objects['bonus'].push (new Bonus (0.5, 3.5));
-    matrix[15][18] = 'b';
-    
+    matrix[10][13] = 'b';
+     
     configureWorld (height, width, height, worldTex);
     objects['world'].push (new World ());
     

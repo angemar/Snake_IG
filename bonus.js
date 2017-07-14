@@ -19,6 +19,14 @@ function Bonus (tranX, tranZ) {
         var y2=this.model[2][3];
         if(Math.sqrt(Math.pow(x2-x1, 2) + Math.pow(y2-y1, 2)) < 0.23){
             var o = objects['bonus'].pop();
+            
+            points+=1;
+            label.innerHTML="Points : " + points.toString();
+            
+            if(points == winPoints){
+                alert("You Win! Press OK to restart the game!");
+            }
+            
             matrix[Math.floor(o.model[0][3])+height / 2][Math.floor(o.model[2][3])+width / 2] = '0';
             do{
                 var x= Math.floor((Math.random() * (height - 1))) - (height / 2 - 0.5);
