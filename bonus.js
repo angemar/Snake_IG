@@ -19,14 +19,22 @@ function Bonus (tranX, tranZ) {
         var y2=this.model[2][3];
         if(Math.sqrt(Math.pow(x2-x1, 2) + Math.pow(y2-y1, 2)) < 0.23){
             var o = objects['bonus'].pop();
-            matrix[Math.floor(o.model[0][3])+15][Math.floor(o.model[2][3])+15] = '0';
+            
+            points+=1;
+            label.innerHTML="Points : " + points.toString();
+            
+            if(points == winPoints){
+                alert("You Win! Press OK to restart the game!");
+            }
+            
+            matrix[Math.floor(o.model[0][3])+height / 2][Math.floor(o.model[2][3])+width / 2] = '0';
             do{
-                var x= Math.floor((Math.random() * 29)) - 14.5;
-                var y= Math.floor((Math.random() * 29)) - 14.5;
-            }while(matrix[Math.floor(x)+15][Math.floor(y)+15] !== '0');
+                var x= Math.floor((Math.random() * (height - 1))) - (height / 2 - 0.5);
+                var y= Math.floor((Math.random() * (width - 1))) - (width / 2 - 0.5);
+            }while(matrix[Math.floor(x)+height / 2][Math.floor(y)+width / 2] !== '0');
             
             objects['bonus'].push(new Bonus(x, y));
-            matrix[Math.floor(x)+15][Math.floor(y)+15] = 'b';
+            matrix[Math.floor(x)+height / 2][Math.floor(y)+width / 2] = 'b';
             Snake.eating = true;
         }
     };

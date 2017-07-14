@@ -1,8 +1,10 @@
 "use strict";
 
 var gl, program;
+var label;
+var points=0, winPoints=300;
 
-var height=30, width=30;
+var height=20, width=20;
 
 var flagRotate = 0;
 
@@ -23,13 +25,13 @@ var vPosition, vNormal, vTexCoord;
 var objPath = "../objects/";
 
 var moveVar = 0;
-var freqVar = 5;
+var freqVar = 2;
 
 var yaw = 0.0;
 var pitch = -30.0 * Math.PI / 180.0;
 
-var eye = vec3 (0.0, 2.0, -6.0);
-var at = vec3 (0.0, 0.0, 0.0);
+var eye = vec3 (0.5, 2.0, -6.0);
+var at = vec3 (0.5, 0.0, 0.0);
 var newAt = [0.0, 0.0, 0.0];
 newAt[0] = -Math.sin (yaw) * Math.cos (pitch);
 newAt[1] = Math.sin (pitch);
@@ -65,30 +67,27 @@ function loadTexture (texture, image) {
 
 function draw() {
     var ctx = document.getElementById('gl-canvas1').getContext('2d');
-    				
-    for (var i = 0; i <30 ; i++) {
-		for (var j = 0; j < 30; j++) {
-    
-    
-     if(matrix[i][j]=='b'){                                    
-		 ctx.fillStyle = "rgb(255,0,0)";
-	  }
-	 else if(matrix[i][j]=='h'){
-	   ctx.fillStyle ="rgb(220,220,220)"
-	  }
-	  
-	  else{
-		 ctx.fillStyle ="rgb(0,0,0)"
-	  }
-	  
-     ctx.fillRect((29-i)*3 , (29-j) * 3, 3 ,3);
+
+    for (var i = 0; i < height; i++) {
+        for (var j = 0; j < width; j++) {
+			
+            if (matrix[i][j] === 'b')
+                ctx.fillStyle = "rgb(255,0,0)";
+            else if (matrix[i][j] === 'h')
+                ctx.fillStyle = "rgb(220,220,220)";
+            else ctx.fillStyle = "rgb(0,0,0)";
+            
+            ctx.fillRect((height - 1 - i) * 5, (width - 1 - j) * 5, 5, 5);
+        }
     }
-   
-  }
-}  
+}
 
 
 window.onload = function () {
+	
+	
+    label = document.getElementById("label") ; 
+	
     var canvas = document.getElementById("gl-canvas");
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
@@ -97,7 +96,7 @@ window.onload = function () {
     if (!gl) alert("WebGL isn't available");
 
     gl.viewport(0, 0, canvas.width, canvas.height);
-    gl.clearColor(1.0, 1.0, 1.0, 1.0);
+    gl.clearColor(0.6, 0.9, 1.0, 1.0);
 
     gl.enable(gl.DEPTH_TEST);
 
@@ -130,12 +129,12 @@ window.onload = function () {
     
     configureBonus (0.23, 30, 2, bonusTex);
     objects['bonus'].push (new Bonus (0.5, 3.5));
-    matrix[15][18] = 'b';
-    
-    configureWorld (height, width, 30, worldTex);
+    matrix[10][13] = 'b';
+     
+    configureWorld (height, width, height, worldTex);
     objects['world'].push (new World ());
     
-    configureSea (100, 100, 25, seaTex);
+    configureSea (50, 50, 25, seaTex);
     objects['sea'].push (new Sea ());
     
     if (canvas.width < canvas.height) aspect = canvas.height / canvas.width;
@@ -200,7 +199,6 @@ var render = function () {
     draw();
     
     objects['sea'][0].move();
-        
     
     gl.uniformMatrix4fv(viewLoc, false, flatten(view));
     gl.uniformMatrix4fv(viewNormLoc, false, flatten(viewNorm));

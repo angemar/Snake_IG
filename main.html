@@ -31,11 +31,24 @@
             
             #gl-canvas1 {
 				top: 1%;
-                left: 86%;
-                width: 15%;
+                left: 89%;
+                width: 10%;
                 position:absolute;
 
 			}
+
+                label {
+                        top: 1%;
+                        left:  1%;
+                        position: absolute;
+                        color: red;
+                        width: 100px;
+                        background: #222;
+                        padding: 10px;
+                        border-radius: 20px;
+                        text-align: center;
+                        vertical-align: middle;
+                }
             
         </style>
         <script id="vertex-shader" type="x-shader/x-vertex">
@@ -243,6 +256,8 @@
              <canvas id="gl-canvas1" width="100" height="100">
                 Oops ... your browser doesn't support the HTML5 canvas element
             </canvas>
+            
+            <label  name= "points" id="label" > Points : 0</label><br>
             
             <menu id="buttons">
                 <button id = "ButtonDir">Dir Light on/off</button>
