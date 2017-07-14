@@ -35,12 +35,14 @@ function configureButtons(document, gl, program) {
         var code = e.keyCode;
         if(code === 37) { // <-
             if (!Snake.turningRight){
-                Snake.turningLeft = true;}
+                Snake.turningLeft = true;
+            }
             return
         }
         if (code === 39) { // ->
-            if (!Snake.turningLeft)
+            if (!Snake.turningLeft){
                 Snake.turningRight = true;
+            }
             return;
         }
     };

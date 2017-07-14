@@ -15,8 +15,8 @@ function Snake () {
         var parts = Snake.parts;
         var len = parts.length;
         
-        for(var i=0; i<len; i++)
-            matrix[Math.floor(parts[i].model[0][3])+ height / 2][Math.floor(parts[i].model[2][3])+ width / 2]='0';
+        /*for(var i=0; i<len; i++)
+            matrix[Math.floor(parts[i].model[0][3])+ height / 2][Math.floor(parts[i].model[2][3])+ width / 2]='0';*/
        
         if (Snake.step === 0) {
             Snake.turnLeftAnim = false;
@@ -75,12 +75,30 @@ function Snake () {
             parts[0].model = mult(parts[0].model, rotateY (-90 / Snake.slices));
             parts[0].model[0][3] = tran[0];
             parts[0].model[2][3] = tran[2];
+            
+            //Rotation Minimap
+            if(Snake.step === Snake.slices-1){
+                ctx.clearRect(0, 0, canvas1.width, canvas1.height);
+                ctx.translate(canvas1.width / 2, canvas1.height / 2);
+                ctx.rotate(Math.PI/2);
+                ctx.translate(-canvas1.width / 2, -canvas1.height / 2);
+                ctx.restore();
+            }
         }
         else if (Snake.turnRightAnim) {
             var tran = mult (this.headMat, vec4 (-Snake.step / Snake.slices, 0.0, 0.0, 1.0));
             parts[0].model = mult(parts[0].model, rotateY (90 / Snake.slices));
             parts[0].model[0][3] = tran[0];
             parts[0].model[2][3] = tran[2];
+            
+            //Rotation Minimap
+            if(Snake.step === Snake.slices-1){
+                ctx.clearRect(0, 0, canvas1.width, canvas1.height);
+                ctx.translate(canvas1.width / 2, canvas1.height / 2);
+                ctx.rotate(-Math.PI/2);
+                ctx.translate(-canvas1.width / 2, -canvas1.height / 2);
+                ctx.restore();
+            }
         }
         else parts[0].model = mult (parts[0].model, translate (0.0, 0.0, 1.0 / Snake.slices));
         

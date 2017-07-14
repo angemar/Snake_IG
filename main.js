@@ -4,6 +4,7 @@ var gl, program;
 var label;
 var points=0, winPoints=300;
 
+var ctx, canvas1;
 var height=20, width=20;
 
 var matrix = [];
@@ -64,13 +65,14 @@ function loadTexture (texture, image) {
 }
 
 function draw() {
-    var ctx = document.getElementById('gl-canvas1').getContext('2d');
+    canvas1 = document.getElementById('gl-canvas1') ;
+    ctx = canvas1.getContext('2d');
 
     for (var i = 0; i < height; i++) {
         for (var j = 0; j < width; j++) {
 			
-            if (matrix[i][j] === 'b')
-                ctx.fillStyle = "rgb(255,0,0)";
+            if (matrix[i][j] === 'b'){
+                ctx.fillStyle = "rgb(255,0,0)"; console.log(i+" "+j);}
             else if (matrix[i][j] === 'h')
                 ctx.fillStyle = "rgb(220,220,220)";
             else ctx.fillStyle = "rgb(0,0,0)";
