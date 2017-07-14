@@ -130,7 +130,7 @@ window.onload = function () {
     
     configureBonus (0.23, 30, 2, bonusTex);
     objects['bonus'].push (new Bonus (0.5, 3.5));
-    matrix[10][13] = 'b';
+    matrix[height/2][3+width/2] = 'b';
      
     configureWorld (height, width, height, worldTex);
     objects['world'].push (new World ());
