@@ -33,12 +33,12 @@ function configureButtons(document, gl, program) {
     document.onkeypress = function(e){
         e = e || window.event;
         var code = e.keyCode;
-        if(code === 39) { // N
+        if(code === 37) { // <-
             if (!Snake.turningRight){
                 Snake.turningLeft = true;}
             return
         }
-        if (code === 37) { // M
+        if (code === 39) { // ->
             if (!Snake.turningLeft)
                 Snake.turningRight = true;
             return;

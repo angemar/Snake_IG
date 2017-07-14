@@ -44,8 +44,8 @@ var proj;
 
 var dirDirection = [45.0, 45.0, 45.0, 0.0];
 var posPosition = [0.0, 25.0, 0.0, 1.0];
-var spotPosition = [eye[0], eye[1], eye[2], 1.0];
-var spotDirection = [0.0, 0.0, -1.0, 0.0];
+var spotPosition = [0.5, 0.0, 3.5, 1.0];//[eye[0], eye[1], eye[2], 1.0];
+var spotDirection = [0.0, -1.0, 0.0, 0.0];//[0.0, 0.0, -1.0, 0.0];
 
 var keys = {'87' : false, '68' : false, '83' : false, '65' : false,
             '38' : false, '39' : false, '40' : false, '37' : false};
@@ -199,8 +199,6 @@ var render = function () {
     
     //move (keys, keysKeys);
     
-    draw();
-    
     objects['sea'][0].move();
     
     gl.uniformMatrix4fv(viewLoc, false, flatten(view));
@@ -208,8 +206,8 @@ var render = function () {
     
     gl.uniform4fv(dirDirLoc, mult (viewNorm, dirDirection));
     gl.uniform4fv(posPosLoc, mult (view, posPosition));
-    gl.uniform4fv(spotPosLoc, mult (view, spotPosition));
-    gl.uniform4fv(spotDirLoc, mult (viewNorm, spotDirection));
+    gl.uniform4fv(spotPosLoc, spotPosition);//mult (view, spotPosition));
+    gl.uniform4fv(spotDirLoc, spotDirection);//mult (viewNorm, spotDirection));
     
     for (var i = 0; i < objKeys.length; i++) {
         if (objects[objKeys[i]].length === 0) continue;
@@ -254,6 +252,8 @@ var render = function () {
             gl.drawElements(gl.TRIANGLE_STRIP, proto.indices().length, gl.UNSIGNED_SHORT, 0);
         }
     }
+    
+    draw();
     
     requestAnimFrame(render);
 };
