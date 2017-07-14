@@ -21,8 +21,8 @@ function Bonus (tranX, tranZ) {
             var o = objects['bonus'].pop();
             matrix[Math.floor(o.model[0][3])+height / 2][Math.floor(o.model[2][3])+width / 2] = '0';
             do{
-                var x= Math.floor((Math.random() * height - 1)) - (height / 2 - 0.5);
-                var y= Math.floor((Math.random() * width - 1)) - (width / 2 - 0.5);
+                var x= Math.floor((Math.random() * (height - 1))) - (height / 2 - 0.5);
+                var y= Math.floor((Math.random() * (width - 1))) - (width / 2 - 0.5);
             }while(matrix[Math.floor(x)+height / 2][Math.floor(y)+width / 2] !== '0');
             
             objects['bonus'].push(new Bonus(x, y));

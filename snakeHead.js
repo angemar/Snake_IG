@@ -25,7 +25,7 @@ function configureSnakeHead (radius1, radius2, slices, texture) {
     var texCoords = [];
     var indices = [];
     
-    for (var i = slices / 4; i < slices; i++) {
+    for (var i = 0; i < slices; i++) {
         var angle1 = Math.PI - (i * Math.PI / slices);
         var nextAngle1 = Math.PI - ((i + 1) * Math.PI / slices);
         

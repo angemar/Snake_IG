@@ -22,11 +22,19 @@ function Snake () {
             matrix[Math.floor(parts[i].model[0][3])+15][Math.floor(parts[i].model[2][3])+15]='0';
         */
         if (Snake.step === 0) {
-            console.log (parts[0].model[0][3]);
-            console.log (parts[0].model[2][3] + '\n');
             Snake.turnLeftAnim = false;
             Snake.turnRightAnim = false;
             Snake.eatAnim = false;
+            
+            var hx = parts[0].model[0][3];
+            var hz = parts[0].model[2][3];
+            hx = Math.floor(hx) + 0.5;
+            hz = Math.floor(hz) + 0.5;
+            parts[0].model[0][3] = hx;
+            parts[0].model[2][3] = hz;
+            
+            console.log (parts[0].model[0][3]);
+            console.log (parts[0].model[2][3] + '\n');
             
             if (Snake.turningLeft) {
                 parts.splice (1, 0, new SnakeLeftBody(0.0, 0.0));
