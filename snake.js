@@ -4,9 +4,6 @@ function Snake () {
     var obst = mult(this.model, vec4(0.0, 0.0, 0.0, 1.0));
     this.obstacle = vec3(obst[0], obst[1], obst[2]);
     
-    this.headMat;
-    this.tailMat;
-    
     this.vertices = function () { return Snake.vertices; };
     this.normals = function () { return Snake.normals; };
     this.texCoords = function () { return Snake.texCoords; };
@@ -19,7 +16,7 @@ function Snake () {
         var len = parts.length;
         
         for(var i=0; i<len; i++)
-            matrix[Math.floor(parts[i].model[0][3])+15][Math.floor(parts[i].model[2][3])+15]='0';
+            matrix[Math.floor(parts[i].model[0][3])+ height / 2][Math.floor(parts[i].model[2][3])+ width / 2]='0';
        
         if (Snake.step === 0) {
             Snake.turnLeftAnim = false;
@@ -114,6 +111,12 @@ function Snake () {
         
         parts[0].modelNorm = normalMatrix(parts[0].model, false);
         parts[len - 1].modelNorm = normalMatrix(parts[len - 1].model, 0);
+        
+        var eye = mult (parts[0].model, vec4 (0.0, 3.0, -5.0, 1.0));
+        var at = mult (parts[0].model, vec4 (0.0, 1.0, 0.0, 1.0));
+        this.eye = vec3 (eye[0], eye[1], eye[2]);
+        this.at = vec3 (at[0], at[1], at[2]);
+        this.up = vec3 (0.0, 1.0, 0.0);
         
         var vertices = [];
         var normals = [];

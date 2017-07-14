@@ -23,7 +23,7 @@ var vPosition, vNormal, vTexCoord;
 var objPath = "../objects/";
 
 var moveVar = 0;
-var freqVar = 2;
+var freqVar = 1;
 
 var yaw = 0.0;
 var pitch = -30.0 * Math.PI / 180.0;
@@ -193,10 +193,14 @@ window.onload = function () {
 var render = function () { 
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
     
-    if (moveVar % freqVar === 0) objects['snake'][0].move();
+    var snake = objects['snake'][0];
+    if (moveVar % freqVar === 0) {
+        snake.move();
+        view = lookAt (snake.eye, snake.at, snake.up);
+    }
     moveVar += 1;
     
-    move (keys, keysKeys);
+    //move (keys, keysKeys);
     
     draw();
     
