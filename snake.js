@@ -17,10 +17,10 @@ function Snake () {
     this.move = function () {
         var parts = Snake.parts;
         var len = parts.length;
-        /*
+        
         for(var i=0; i<len; i++)
             matrix[Math.floor(parts[i].model[0][3])+15][Math.floor(parts[i].model[2][3])+15]='0';
-        */
+       
         if (Snake.step === 0) {
             Snake.turnLeftAnim = false;
             Snake.turnRightAnim = false;
@@ -176,9 +176,7 @@ function Snake () {
                 Math.floor(parts[0].model[2][3])+height / 2< 0 ||
                 Math.floor(parts[0].model[2][3])+height / 2 > height-1) {
             alert("Game Over! Press OK to restart the game!");
-            window.reload();
-            //configureSnake(height, this.texture());
-            //objects['snake'][0] = new Snake();
+            window.location.reload(false); 
         }
         
         Snake.step = (Snake.step + 1) % (Snake.slices);

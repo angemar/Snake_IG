@@ -25,6 +25,7 @@ function Bonus (tranX, tranZ) {
             
             if(points == winPoints){
                 alert("You Win! Press OK to restart the game!");
+                window.location.reload(false); 
             }
             
             matrix[Math.floor(o.model[0][3])+height / 2][Math.floor(o.model[2][3])+width / 2] = '0';
