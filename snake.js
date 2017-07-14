@@ -37,9 +37,6 @@ function Snake () {
             parts[len - 1].model[0][3] = x;
             parts[len - 1].model[2][3] = z;
             
-            console.log (parts[len - 1].model[0][3]);
-            console.log (parts[len - 1].model[2][3]);
-            console.log (' ');
             
             if (Snake.turningLeft) {
                 parts.splice (1, 0, new SnakeLeftBody(0.0, 0.0));
@@ -167,9 +164,9 @@ function Snake () {
         Snake.texCoords = texCoords;
         Snake.indices = indices;
         
-        matrix[Math.floor(parts[0].model[0][3])+10][Math.floor(parts[0].model[2][3])+10]='h';
+        matrix[Math.floor(parts[0].model[0][3])+height/2][Math.floor(parts[0].model[2][3])+width/2]='h';
         for(var i=2; i<len; i++){
-            matrix[Math.floor(parts[i].model[0][3])+10][Math.floor(parts[i].model[2][3])+10]='s';
+            matrix[Math.floor(parts[i].model[0][3])+height/2][Math.floor(parts[i].model[2][3])+width/2]='s';
         }
         
         
@@ -178,7 +175,7 @@ function Snake () {
                 Math.floor(parts[0].model[0][3])+height / 2 > width-1 ||
                 Math.floor(parts[0].model[2][3])+height / 2< 0 ||
                 Math.floor(parts[0].model[2][3])+height / 2 > height-1) {
-            alert("Game Over! Press OK to restart the game!");
+            alert("GAME OVER!\nPress OK to restart the game!");
             window.location.reload(false); 
         }
         

@@ -51,9 +51,6 @@ var keys = {'87' : false, '68' : false, '83' : false, '65' : false,
             '38' : false, '39' : false, '40' : false, '37' : false};
 var keysKeys = Object.keys(keys);
 
-var label;
-var points=0, winPoints = 300;
-
 var modelLoc, modelNormLoc, viewLoc, viewNormLoc, projLoc;
 var dirDirLoc, posPosLoc, spotPosLoc, spotDirLoc;
 var eyeDistLoc;

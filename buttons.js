@@ -4,7 +4,7 @@ function configureButtons(document, gl, program) {
     var spotOnLoc = gl.getUniformLocation(program, "spotOn");
     var texOnLoc = gl.getUniformLocation(program, "texOn");
 
-    document.getElementById("ButtonDir").onclick = function () {
+    /*document.getElementById("ButtonDir").onclick = function () {
         var flag = gl.getUniform(program, dirOnLoc);
         gl.uniform1f(dirOnLoc, !flag);
     };
@@ -22,7 +22,7 @@ function configureButtons(document, gl, program) {
     document.getElementById("ButtonTex").onclick = function () {
         var flag = gl.getUniform(program, texOnLoc);
         gl.uniform1f(texOnLoc, !flag);
-    };
+    };*/
 
     document.onkeydown = document.onkeyup = function (e) {
         e = e || window.event;
@@ -32,13 +32,13 @@ function configureButtons(document, gl, program) {
     
     document.onkeypress = function(e){
         e = e || window.event;
-        var code = e.charCode; 
-        if(code === 110) { // N
-            if (!Snake.turningRight)
-                Snake.turningLeft = true;
+        var code = e.keyCode;
+        if(code === 39) { // N
+            if (!Snake.turningRight){
+                Snake.turningLeft = true;}
             return
         }
-        if (code === 109) { // M
+        if (code === 37) { // M
             if (!Snake.turningLeft)
                 Snake.turningRight = true;
             return;

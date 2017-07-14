@@ -23,8 +23,8 @@ function Bonus (tranX, tranZ) {
             points+=1;
             label.innerHTML="Points : " + points.toString();
             
-            if(points == winPoints){
-                alert("You Win! Press OK to restart the game!");
+            if(points === winPoints){
+                alert("YOU WIN!\nPress OK to restart the game!");
                 window.location.reload(false); 
             }
             
