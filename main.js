@@ -6,8 +6,6 @@ var points=0, winPoints=300;
 
 var height=20, width=20;
 
-var flagRotate = 0;
-
 var matrix = [];
 for(var i=0; i<height; i++){
     matrix.push([]);
