@@ -26,15 +26,23 @@ function Snake () {
             Snake.turnRightAnim = false;
             Snake.eatAnim = false;
             
-            var hx = parts[0].model[0][3];
-            var hz = parts[0].model[2][3];
-            hx = Math.floor(hx) + 0.5;
-            hz = Math.floor(hz) + 0.5;
-            parts[0].model[0][3] = hx;
-            parts[0].model[2][3] = hz;
+            var x = parts[0].model[0][3];
+            var z = parts[0].model[2][3];
+            x = Math.floor(x) + 0.5;
+            z = Math.floor(z) + 0.5;
+            parts[0].model[0][3] = x;
+            parts[0].model[2][3] = z;
             
-            console.log (parts[0].model[0][3]);
-            console.log (parts[0].model[2][3] + '\n');
+            x = parts[len - 1].model[0][3];
+            z = parts[len - 1].model[2][3];
+            x = Math.floor(x) + 0.5;
+            z = Math.floor(z) + 0.5;
+            parts[len - 1].model[0][3] = x;
+            parts[len - 1].model[2][3] = z;
+            
+            console.log (parts[len - 1].model[0][3]);
+            console.log (parts[len - 1].model[2][3]);
+            console.log (' ');
             
             if (Snake.turningLeft) {
                 parts.splice (1, 0, new SnakeLeftBody(0.0, 0.0));
