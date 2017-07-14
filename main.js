@@ -135,7 +135,7 @@ window.onload = function () {
     configureWorld (height, width, height, worldTex);
     objects['world'].push (new World ());
     
-    configureSea (50, 50, 25, seaTex);
+    configureSea (40, 40, 20, seaTex);
     objects['sea'].push (new Sea ());
     
     if (canvas.width < canvas.height) aspect = canvas.height / canvas.width;

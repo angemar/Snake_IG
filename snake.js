@@ -182,6 +182,15 @@ function Snake () {
         Snake.texCoords = texCoords;
         Snake.indices = indices;
         
+        if(Math.floor(parts[0].model[0][3]) +height / 2 < 0 ||
+           Math.floor(parts[0].model[0][3])+height / 2 > width-1 ||
+           Math.floor(parts[0].model[2][3])+height / 2 < 0 ||
+           Math.floor(parts[0].model[2][3])+height / 2 > height-1){
+                alert("GAME OVER!\nPress OK to restart the game!");
+                window.location.reload(false); 
+        }
+        
+        console.log(parts[0].model[0][3]+ " "+parts[0].model[2][3] );
         matrix[Math.floor(parts[0].model[0][3])+height/2][Math.floor(parts[0].model[2][3])+width/2]='h';
         matrix[Math.floor(parts[1].model[0][3])+height/2][Math.floor(parts[1].model[2][3])+width/2]='h1';
         for(var i=2; i<len; i++){
@@ -189,11 +198,7 @@ function Snake () {
         }
         
         
-        if(matrix[Math.floor(parts[0].model[0][3])+height / 2][Math.floor(parts[0].model[2][3])+width/2] === 's' ||
-                Math.floor(parts[0].model[0][3]) +height / 2 < 0 ||
-                Math.floor(parts[0].model[0][3])+height / 2 > width-1 ||
-                Math.floor(parts[0].model[2][3])+height / 2< 0 ||
-                Math.floor(parts[0].model[2][3])+height / 2 > height-1) {
+        if(matrix[Math.floor(parts[0].model[0][3])+height / 2][Math.floor(parts[0].model[2][3])+width/2] === 's'){
             alert("GAME OVER!\nPress OK to restart the game!");
             window.location.reload(false); 
         }
