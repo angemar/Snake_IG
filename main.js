@@ -51,6 +51,9 @@ var keys = {'87' : false, '68' : false, '83' : false, '65' : false,
             '38' : false, '39' : false, '40' : false, '37' : false};
 var keysKeys = Object.keys(keys);
 
+var label;
+var points=0, winPoints = 300;
+
 var modelLoc, modelNormLoc, viewLoc, viewNormLoc, projLoc;
 var dirDirLoc, posPosLoc, spotPosLoc, spotDirLoc;
 var eyeDistLoc;
@@ -68,22 +71,24 @@ function draw() {
 
     for (var i = 0; i < height; i++) {
         for (var j = 0; j < width; j++) {
+			
             if (matrix[i][j] === 'b')
                 ctx.fillStyle = "rgb(255,0,0)";
             else if (matrix[i][j] === 'h')
                 ctx.fillStyle = "rgb(220,220,220)";
             else ctx.fillStyle = "rgb(0,0,0)";
             
-            ctx.fillRect((height - 1 - i) * 3, (width - 1 - j) * 3, 3, 3);
+            ctx.fillRect((height - 1 - i) * 5, (width - 1 - j) * 5, 5, 5);
         }
     }
 }
-
 
 window.onload = function () {
     var canvas = document.getElementById("gl-canvas");
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
+    
+    label = document.getElementById("label") ; 
 
     gl = WebGLUtils.setupWebGL(canvas);
     if (!gl) alert("WebGL isn't available");
