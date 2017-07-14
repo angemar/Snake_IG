@@ -4,6 +4,9 @@ function Snake () {
     var obst = mult(this.model, vec4(0.0, 0.0, 0.0, 1.0));
     this.obstacle = vec3(obst[0], obst[1], obst[2]);
     
+    this.headMat;
+    this.tailMat;
+    
     this.vertices = function () { return Snake.vertices; };
     this.normals = function () { return Snake.normals; };
     this.texCoords = function () { return Snake.texCoords; };
@@ -14,22 +17,27 @@ function Snake () {
     this.move = function () {
         var parts = Snake.parts;
         var len = parts.length;
-        
-        //matrix[Math.floor(parts[0].model[0][3])+15][Math.floor(parts[0].model[2][3])+15]='0';
-        //matrix[Math.floor(parts[0].model[0][3])+15][Math.floor(parts[0].model[2][3])+15]='h';
-        
+        /*
+        for(var i=0; i<len; i++)
+            matrix[Math.floor(parts[i].model[0][3])+15][Math.floor(parts[i].model[2][3])+15]='0';
+        */
         if (Snake.step === 0) {
+            console.log (parts[0].model[0][3]);
+            console.log (parts[0].model[2][3] + '\n');
             Snake.turnLeftAnim = false;
             Snake.turnRightAnim = false;
             Snake.eatAnim = false;
             
             if (Snake.turningLeft) {
                 parts.splice (1, 0, new SnakeLeftBody(0.0, 0.0));
+                this.headMat = parts[0].model;
                 Snake.turningLeft = false;
                 Snake.turnLeftAnim = true;
             }
             else if (Snake.turningRight) {
                 parts.splice (1, 0, new SnakeRightBody(0.0, 0.0));
+                this.headMat = parts[0].model;
+                this.tailMat = parts[parts.length - 2].model;
                 Snake.turningRight = false;
                 Snake.turnRightAnim = true;
             }
@@ -41,45 +49,51 @@ function Snake () {
             }
                 
             parts[1].model = parts[0].model;
-            parts[1].normal = parts[0].normal;
+            parts[1].modelNorm = parts[0].modelNorm;
             len += 1;
             
             if (!Snake.eatAnim) {
                 parts.splice (len - 2, 1);
                 len -= 1;
             }
+            
+            this.tailMat = null;
         }
         
         if (Snake.turnLeftAnim) {
-            var mat = mult (rotateY (-90 / Snake.slices),
-                            translate (0.0, 0.0, 1.0 / Snake.slices));
-            parts[0].model = mult(parts[0].model, mat);
+            var tran = mult (this.headMat, vec4 (Snake.step / Snake.slices, 0.0, 0.0, 1.0));
+            parts[0].model = mult(parts[0].model, rotateY (-90 / Snake.slices));
+            parts[0].model[0][3] = tran[0];
+            parts[0].model[2][3] = tran[2];
         }
         else if (Snake.turnRightAnim) {
-            var mat = mult (rotateY (90 / Snake.slices),
-                            translate (0.0, 0.0, 1.0 / Snake.slices));
-            parts[0].model = mult(parts[0].model, mat);
+            var tran = mult (this.headMat, vec4 (-Snake.step / Snake.slices, 0.0, 0.0, 1.0));
+            parts[0].model = mult(parts[0].model, rotateY (90 / Snake.slices));
+            parts[0].model[0][3] = tran[0];
+            parts[0].model[2][3] = tran[2];
         }
-        else {
-            var mat = translate (0.0, 0.0, 1.0 / Snake.slices);
-            parts[0].model = mult(parts[0].model, mat);
-        }
+        else parts[0].model = mult (parts[0].model, translate (0.0, 0.0, 1.0 / Snake.slices));
         
         if (!Snake.eatAnim) {
-            if (parts[len - 2] instanceof SnakeLeftBody) {
-                var mat = mult (rotateY (-90 / Snake.slices),
-                                translate (0.0, 0.0, 1.0 / Snake.slices));
-                parts[len - 1].model = mult(parts[len - 1].model, mat);
+            var l = len -1;
+            if (parts[l - 1] instanceof SnakeLeftBody) {
+                if (this.tailMat === null) this.tailMat = parts[l].model;
+                var tran = mult (this.tailMat,
+                                 vec4 (0.0, 0.0, Snake.step / Snake.slices, 1.0));
+                parts[l].model = mult(parts[l].model, rotateY (-90 / Snake.slices));
+                parts[l].model[0][3] = tran[0];
+                parts[l].model[2][3] = tran[2];
             }
-            else if (parts[len - 2] instanceof SnakeRightBody) {
-                var mat = mult (rotateY (90 / Snake.slices),
-                                translate (0.0, 0.0, 1.0 / Snake.slices));
-                parts[len - 1].model = mult(parts[len - 1].model, mat);
+            else if (parts[l - 1] instanceof SnakeRightBody) {
+                if (this.tailMat === null) this.tailMat = parts[l].model;
+                var tran = mult (this.tailMat,
+                                 vec4 (0.0, 0.0, Snake.step / Snake.slices, 1.0));
+                parts[l].model = mult(parts[l].model, rotateY (90 / Snake.slices));
+                parts[l].model[0][3] = tran[0];
+                parts[l].model[2][3] = tran[2];
             }
-            else {
-                var mat = translate (0.0, 0.0, 1.0 / Snake.slices);
-                parts[len - 1].model = mult(parts[len - 1].model, mat);
-            }
+            else parts[l].model = mult (parts[len - 1].model,
+                                        translate (0.0, 0.0, 1.0 / Snake.slices));
         }
         
         parts[0].modelNorm = normalMatrix(parts[0].model, false);
@@ -89,9 +103,13 @@ function Snake () {
         var normals = [];
         var texCoords = [];
         var indices = [];
-
+        
+        var bodyChanged = false;
+        var leftBodyChanged = false;
+        var rightBodyChanged = false;
+        
         var tot = 0;
-        for (var i = 0; i < parts.length; i++) {
+        for (var i = 0; i < len; i++) {
             var v = parts[i].vertices ();
             var n = parts[i].normals ();
             var t = parts[i].texCoords ();
@@ -106,10 +124,19 @@ function Snake () {
             for (var j = 0; j < v.length; j++) {
                 vertices.push (mult (parts[i].model, v[j]));
                 normals.push (mult (parts[i].modelNorm, n[j]));
-                if (i !== 0 && i !== parts.length - 1)
-                    t[j][1] += 0.33333 / Snake.slices;
+                
+                if (parts[i] instanceof SnakeBody && !bodyChanged ||
+                    parts[i] instanceof SnakeLeftBody && !leftBodyChanged ||
+                    parts[i] instanceof SnakeRightBody && !rightBodyChanged)
+                    t[j][1] += 1.0 / Snake.slices;
+                
                 texCoords.push (t[j]);
             }
+            
+            if (parts[i] instanceof SnakeBody) bodyChanged = true;
+            else if (parts[i] instanceof SnakeLeftBody) leftBodyChanged = true;
+            else if (parts[i] instanceof SnakeRightBody) rightBodyChanged = true;
+            
             for (var k = 0; k < c.length; k++) indices.push (c[k] + tot);
 
             tot += v.length;
@@ -120,6 +147,22 @@ function Snake () {
         Snake.normals = normals;
         Snake.texCoords = texCoords;
         Snake.indices = indices;
+        /*
+        matrix[Math.floor(parts[0].model[0][3])+15][Math.floor(parts[0].model[2][3])+15]='h';
+        for(var i=2; i<len; i++){
+            matrix[Math.floor(parts[i].model[0][3])+15][Math.floor(parts[i].model[2][3])+15]='s';
+        }
+        
+        
+        if(matrix[Math.floor(parts[0].model[0][3])+15][Math.floor(parts[0].model[2][3])+15] === 's' ||
+                Math.floor(parts[0].model[0][3]) +15 < 0 ||
+                Math.floor(parts[0].model[0][3])+15 > width-1 ||
+                Math.floor(parts[0].model[2][3])+15 < 0 ||
+                Math.floor(parts[0].model[2][3])+15 > height-1) {
+            alert("Game Over! Press OK to restart the game!");
+            configureSnake(20, this.texture());
+            objects['snake'][0] = new Snake();
+        }*/
         
         Snake.step = (Snake.step + 1) % (Snake.slices);
     };
