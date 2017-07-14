@@ -2,7 +2,7 @@
 
 var gl, program;
 var label;
-var points=0, winPoints=300;
+var points=0, winPoints=301;
 
 var height=20, width=20;
 
