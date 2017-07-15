@@ -4,6 +4,10 @@ function Bonus(tranX, tranZ) {
 
     var obst = mult(this.model, vec4(0.0, 0.0, 0.0, 1.0));
     this.obstacle = vec3(obst[0], obst[1], obst[2]);
+    
+    this.spotPosition = vec4 (mult (this.model, vec4 (0.0, 3.0, 0.0, 1.0)));
+    this.spotDirection = vec4 (0.0, 1.0, 0.0, 1.0);
+    this.spotCutoff = 20.0;
 
     this.vertices = function () {
         return Bonus.vertices;
@@ -30,8 +34,6 @@ function Bonus(tranX, tranZ) {
         var y1 = parts[0].model[2][3];
         var y2 = this.model[2][3];
         if (Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2)) < 0.23) {
-            var o = objects['bonus'].pop();
-
             Bonus.points += 1;
             label.innerHTML = "Points : " + Bonus.points.toString();
 
@@ -40,16 +42,22 @@ function Bonus(tranX, tranZ) {
                 window.location.reload(false);
             }
             
-            var row = Math.floor(o.model[0][3]) + World.height / 2;
-            var col = Math.floor(o.model[2][3]) + World.width / 2;
+            var row = Math.floor(this.model[0][3]) + World.height / 2;
+            var col = Math.floor(this.model[2][3]) + World.width / 2;
             matrix[row][col] = '0';
+            
+            var x, z;
             do {
-                var x = Math.floor((Math.random() * (World.height - 1))) - (World.height / 2 - 0.5);
-                var y = Math.floor((Math.random() * (World.width - 1))) - (World.width / 2 - 0.5);
-            } while (matrix[Math.floor(x) + World.height / 2][Math.floor(y) + World.width / 2] !== '0');
+                x = Math.floor((Math.random() * (World.height - 1))) - (World.height / 2 - 0.5);
+                z = Math.floor((Math.random() * (World.width - 1))) - (World.width / 2 - 0.5);
+            }
+            while (matrix[Math.floor(x) + World.height / 2][Math.floor(z) + World.width / 2] !== '0');
 
-            objects['bonus'].push(new Bonus(x, y));
-            matrix[Math.floor(x) + World.height / 2][Math.floor(y) + World.width / 2] = 'b';
+            this.model[0][3] = x;
+            this.model[2][3] = z;
+            
+            this.spotPosition = vec4 (mult (this.model, vec4 (0.0, 3.0, 0.0, 1.0)));
+            matrix[Math.floor(x) + World.height / 2][Math.floor(z) + World.width / 2] = 'b';
             Snake.eating = true;
         }
     };
@@ -139,7 +147,7 @@ function configureBonus(radius, slices, rotAngle, texture) {
     Bonus.radius = radius;
     Bonus.slices = slices;
     Bonus.texture = texture;
-    Bonus.rotMat = rotate(rotAngle, -1.0, 1.0, 0.0);
+    Bonus.rotMat = rotate(0.0, rotAngle, 0.0, 0.0);
 
     Bonus.vertices = vertices;
     Bonus.normals = normals;

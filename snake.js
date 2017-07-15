@@ -1,7 +1,7 @@
 function Snake () {
     this.model = translate (0.0, 0.0, 0.0);
     this.modelNorm = this.model;
-    var obst = mult(this.model, vec4(0.0, 0.0, 0.0, 1.0));
+    var obst = mult(Snake.parts[0].model, vec4(0.0, 0.0, 0.0, 1.0));
     this.obstacle = vec3(obst[0], obst[1], obst[2]);
     
     this.vertices = function () { return Snake.vertices; };

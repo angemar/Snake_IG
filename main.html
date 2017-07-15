@@ -31,8 +31,8 @@
             
             #gl-canvas1 {
                 top: 1%;
-                left: 84%;
-                width: 15%;
+                left: 89%;
+                width: 10%;
                 position:absolute;
             }
 
@@ -70,11 +70,11 @@
 
             void main() {
                 P = (view * model * vPosition).xyz;
-                N = normalize((viewNorm * modelNorm * vNormal).xyz);
-                dirDir = dirDirection.xyz;
-                posPos = posPosition.xyz;
-                spotPos = spotPosition.xyz;
-                spotDir = spotDirection.xyz;
+                N = normalize ((viewNorm * modelNorm * vNormal).xyz);
+                dirDir = normalize ((viewNorm * dirDirection).xyz);
+                posPos = (view * posPosition).xyz;
+                spotPos = (view * spotPosition).xyz;
+                spotDir = normalize ((viewNorm * spotDirection).xyz);
                 
                 ambProd = ambientProduct;
                 diffProd = diffuseProduct;
@@ -99,8 +99,7 @@
 
                 gl_Position = proj * view * model * vPosition;
                 
-
-                if (dist > 15.0) {
+                if (dist > 10.0) {
                     float Kd, Ks;
                     
                     float posDist = distance(posPos, P);
@@ -173,7 +172,7 @@
                 vec4 spot = spotlight;
                 
                 
-                if (dist <= 15.0) {
+                if (dist <= 10.0) {
                     float Kd, Ks;
                     
                     float posDist = distance(posPos, P);
@@ -252,7 +251,7 @@
                 Oops ... your browser doesn't support the HTML5 canvas element
             </canvas>
             
-             <canvas id="gl-canvas1" width="100" height="100">
+             <canvas id="gl-canvas1" width="80" height="80">
                 Oops ... your browser doesn't support the HTML5 canvas element
             </canvas>
             

@@ -24,8 +24,7 @@ function configureSea (width, height, slices, texture) {
     var texCoords = [];
     var indices = [];
 
-    var heightBottom = -height / 2.0, widthBottom = -width / 2.0;    
-    var norm = vec4(0.0, 1.0, 0.0, 1.0);
+    var heightBottom = -height / 2.0, widthBottom = -width / 2.0;
     
     for (var i = 0; i < slices; i++) {
         for (var j = 0; j <= slices; j++) {

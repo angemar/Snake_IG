@@ -13,8 +13,6 @@ var objKeys = [];
 var vBuffer, nBuffer, tBuffer, iBuffer;
 var vPosition, vNormal, vTexCoord;
 
-var objPath = "../objects/";
-
 var moveVar = 0;
 var freqVar = 1;
 
@@ -37,15 +35,13 @@ var proj;
 
 var dirDirection = [45.0, 45.0, 45.0, 0.0];
 var posPosition = [0.0, 25.0, 0.0, 1.0];
-var spotPosition = [0.5, 0.0, 3.5, 1.0];//[eye[0], eye[1], eye[2], 1.0];
-var spotDirection = [0.0, -1.0, 0.0, 0.0];//[0.0, 0.0, -1.0, 0.0];
 
 var keys = {'87' : false, '68' : false, '83' : false, '65' : false,
             '38' : false, '39' : false, '40' : false, '37' : false};
 var keysKeys = Object.keys(keys);
 
 var modelLoc, modelNormLoc, viewLoc, viewNormLoc, projLoc;
-var dirDirLoc, posPosLoc, spotPosLoc, spotDirLoc;
+var dirDirLoc, posPosLoc, spotPosLoc, spotDirLoc, spotCutoffLoc;
 var eyeDistLoc;
 
 function loadTexture (texture, image) {
@@ -72,7 +68,6 @@ function draw() {
             else ctx.fillStyle = "rgb(0,0,0)";
             
             ctx.fillRect((wh - 1 - i) * ch / wh, (ww - 1 - j) * cw / ww, cw / ww, ch / wh);
-            //ctx.fillRect(ch - i * ch / wh, cw - j * cw / ww, cw / ww, ch / wh);
         }
     }
 }
@@ -184,6 +179,7 @@ window.onload = function () {
     posPosLoc = gl.getUniformLocation(program, "posPosition");
     spotPosLoc = gl.getUniformLocation(program, "spotPosition");
     spotDirLoc = gl.getUniformLocation(program, "spotDirection");
+    spotCutoffLoc = gl.getUniformLocation(program, "spotCutoffAngle");
     
     eyeDistLoc = gl.getUniformLocation(program, "eyeDist");
 
@@ -202,20 +198,22 @@ var render = function () {
     if (moveVar % freqVar === 0) {
         snake.move();
         view = lookAt (snake.eye, snake.at, snake.up);
+        viewNorm = normalMatrix(view, false);
     }
     moveVar += 1;
-    
-    //move (keys, keysKeys);
     
     objects['sea'][0].move();
     
     gl.uniformMatrix4fv(viewLoc, false, flatten(view));
     gl.uniformMatrix4fv(viewNormLoc, false, flatten(viewNorm));
     
-    gl.uniform4fv(dirDirLoc, mult (viewNorm, dirDirection));
-    gl.uniform4fv(posPosLoc, mult (view, posPosition));
-    gl.uniform4fv(spotPosLoc, spotPosition);//mult (view, spotPosition));
-    gl.uniform4fv(spotDirLoc, spotDirection);//mult (viewNorm, spotDirection));
+    gl.uniform4fv(dirDirLoc, dirDirection);
+    gl.uniform4fv(posPosLoc, posPosition);
+    
+    var bonus = objects['bonus'][0];
+    gl.uniform4fv(spotPosLoc, bonus.spotPosition);
+    gl.uniform4fv(spotDirLoc, bonus.spotDirection);
+    gl.uniform1f(spotCutoffLoc, bonus.spotCutoff);
     
     for (var i = 0; i < objKeys.length; i++) {
         if (objects[objKeys[i]].length === 0) continue;
