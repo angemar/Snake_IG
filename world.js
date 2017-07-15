@@ -2,6 +2,8 @@ function World () {
     this.model = translate(0.0, 0.0, 0.0);
     this.modelNorm = normalMatrix(this.model, false);
     
+    this.width = function () { return World.width; };
+    this.height = function () { return World.height; };
     this.vertices = function () { return World.vertices; };
     this.normals = function () { return World.normals; };
     this.texCoords = function () { return World.texCoords; };

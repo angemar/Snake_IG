@@ -1,19 +1,11 @@
 "use strict";
 
 var gl, program;
-var label;
-var points=0, winPoints=300;
 
-var ctx, canvas1;
-var height=20, width=20;
+var canvas1, ctx;
+var label;
 
 var matrix = [];
-for(var i=0; i<height; i++){
-    matrix.push([]);
-    for(var j=0;j<width;j++){
-        matrix[i].push('0');
-    }
-}
 
 var objects = {'snake' : [], 'bonus' : [], 'world' : [], 'sea' : []};
 var objKeys = [];
@@ -64,12 +56,14 @@ function loadTexture (texture, image) {
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
 }
 
-function draw() {
-    canvas1 = document.getElementById('gl-canvas1') ;
-    ctx = canvas1.getContext('2d');
+function draw() {    
+    var cw = canvas1.width;
+    var ch = canvas1.height;
+    var ww = World.height;
+    var wh = World.width;
 
-    for (var i = 0; i < height; i++) {
-        for (var j = 0; j < width; j++) {
+    for (var i = 0; i < wh; i++) {
+        for (var j = 0; j < ww; j++) {
 			
             if (matrix[i][j] === 'b')
                 ctx.fillStyle = "rgb(255,0,0)"; 
@@ -77,7 +71,8 @@ function draw() {
                 ctx.fillStyle = "rgb(220,220,220)";
             else ctx.fillStyle = "rgb(0,0,0)";
             
-            ctx.fillRect((height - 1 - i) * 5, (width - 1 - j) * 5, 5, 5);
+            ctx.fillRect((wh - 1 - i) * ch / wh, (ww - 1 - j) * cw / ww, cw / ww, ch / wh);
+            //ctx.fillRect(ch - i * ch / wh, cw - j * cw / ww, cw / ww, ch / wh);
         }
     }
 }
@@ -90,6 +85,9 @@ window.onload = function () {
     var canvas = document.getElementById("gl-canvas");
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
+    
+    canvas1 = document.getElementById('gl-canvas1') ;
+    ctx = canvas1.getContext('2d');
     
     label = document.getElementById("label") ; 
 
@@ -124,19 +122,27 @@ window.onload = function () {
     var seaImage = new Image ();
     seaImage.onload = function () { loadTexture (seaTex, seaImage); };
     seaImage.src = 'sea_512.jpg';
+     
+    configureWorld (16, 16, 16, worldTex);
+    objects['world'].push (new World ());
     
-    configureSnake (20, snakeTex);
+    for(var i = 0; i < World.height; i++){
+        matrix.push([]);
+        for(var j = 0;j < World.width; j++){
+            matrix[i].push('0');
+        }
+    }
+    
+    configureSnake (15, snakeTex);
     objects['snake'].push (new Snake());
     
     configureBonus (0.23, 30, 2, bonusTex);
     objects['bonus'].push (new Bonus (0.5, 3.5));
-    matrix[height/2][3+width/2] = 'b';
-     
-    configureWorld (height, width, height, worldTex);
-    objects['world'].push (new World ());
+    matrix[World.height / 2][3 + World.width / 2] = 'b';
     
     configureSea (40, 40, 20, seaTex);
     objects['sea'].push (new Sea ());
+    
     
     if (canvas.width < canvas.height) aspect = canvas.height / canvas.width;
     else aspect = canvas.width / canvas.height;
@@ -242,7 +248,7 @@ var render = function () {
             if(objKeys[i] === 'bonus') { 
                 obj.model = mult(obj.model, Bonus.rotMat);
                 obj.modelNorm = normalMatrix(obj.model, false);
-                obj.eat(objects['snake'][0]);
+                obj.eat();
             }
             if (objKeys[i] !== 'world' && objKeys[i] !== 'sea') {
                 gl.uniform1f(eyeDistLoc, length (subtract (obj.obstacle, eye)));

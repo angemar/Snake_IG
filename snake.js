@@ -15,8 +15,11 @@ function Snake () {
         var parts = Snake.parts;
         var len = parts.length;
         
-        for(var i=0; i<len; i++)
-            matrix[Math.floor(parts[i].model[0][3])+ height / 2][Math.floor(parts[i].model[2][3])+ width / 2]='0';
+        for(var i = 0; i < len; i++) {
+            var row = Math.floor(parts[i].model[0][3])+ World.height / 2;
+            var col = Math.floor(parts[i].model[2][3])+ World.width / 2;
+            matrix[row][col]='0';
+        }
        
         if (Snake.step === 0) {
             Snake.turnLeftAnim = false;
@@ -182,22 +185,31 @@ function Snake () {
         Snake.texCoords = texCoords;
         Snake.indices = indices;
         
-        if(Math.floor(parts[0].model[0][3]) +height / 2 < 0 ||
-           Math.floor(parts[0].model[0][3])+height / 2 > width-1 ||
-           Math.floor(parts[0].model[2][3])+height / 2 < 0 ||
-           Math.floor(parts[0].model[2][3])+height / 2 > height-1){
+        if(Math.floor(parts[0].model[0][3]) + World.height / 2 < 0 ||
+           Math.floor(parts[0].model[0][3])+ World.height / 2 > World.width - 1 ||
+           Math.floor(parts[0].model[2][3])+ World.height / 2 < 0 ||
+           Math.floor(parts[0].model[2][3])+ World.height / 2 > World.height - 1) {
                 alert("GAME OVER!\nPress OK to restart the game!");
                 window.location.reload(false); 
         }
         
-        matrix[Math.floor(parts[0].model[0][3])+height/2][Math.floor(parts[0].model[2][3])+width/2]='h';
-        matrix[Math.floor(parts[1].model[0][3])+height/2][Math.floor(parts[1].model[2][3])+width/2]='h1';
+        var row = Math.floor(parts[0].model[0][3]) + World.height / 2;
+        var col = Math.floor(parts[0].model[2][3])+ World.width / 2;
+        matrix[row][col] = 'h';
+        
+        row = Math.floor(parts[1].model[0][3]) + World.height / 2;
+        col = Math.floor(parts[1].model[2][3]) + World.width / 2;
+        matrix[row][col] = 'h1';
+        
         for(var i=2; i<len; i++){
-            matrix[Math.floor(parts[i].model[0][3])+height/2][Math.floor(parts[i].model[2][3])+width/2]='s';
+            var row = Math.floor(parts[i].model[0][3]) + World.height / 2;
+            var col = Math.floor(parts[i].model[2][3]) + World.width / 2;
+            matrix[row][col] = 's';
         }
         
-        
-        if(matrix[Math.floor(parts[0].model[0][3])+height / 2][Math.floor(parts[0].model[2][3])+width/2] === 's'){
+        row = Math.floor(parts[0].model[0][3])+ World.height / 2;
+        col = Math.floor(parts[0].model[2][3])+ World.width / 2;
+        if(matrix[row][col] === 's'){
             alert("GAME OVER!\nPress OK to restart the game!");
             window.location.reload(false); 
         }

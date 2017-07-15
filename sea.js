@@ -13,9 +13,9 @@ function Sea () {
     this.move = function () {
         var seaCoords = Sea.texCoords;
         for(var i = 0; i < seaCoords.length; i++)
-            seaCoords[i][1] += 0.001 * Math.sin(this.seaWave * Math.PI / 180.0);
+            seaCoords[i][1] += 0.005 * Math.sin(this.seaWave * Math.PI / 180.0);
         this.seaWave = (this.seaWave + 1) % 360;
-    }
+    };
 }
 
 function configureSea (width, height, slices, texture) {
