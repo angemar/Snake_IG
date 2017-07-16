@@ -7,7 +7,7 @@ function Bonus(tranX, tranZ) {
     
     this.spotPosition = vec4 (mult (this.model, vec4 (0.0, 3.0, 0.0, 1.0)));
     this.spotDirection = vec4 (0.0, 1.0, 0.0, 1.0);
-    this.spotCutoff = 20.0;
+    this.spotCutoff = 15.0;
 
     this.vertices = function () {
         return Bonus.vertices;

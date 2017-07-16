@@ -1,5 +1,5 @@
-var posAttenuation = [1.0, 0.01, 0.0001];
-var spotAttenuation = [1.0, 0.01, 0.0001];
+var posAttenuation = [1.0, 0.001, 0.0001];
+var spotAttenuation = [1.0, 0.001, 0.0001];
 
 var spotCutoff = 10.0;
 

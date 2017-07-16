@@ -4,12 +4,6 @@ function configureButtons(document, gl, program) {
     var spotOnLoc = gl.getUniformLocation(program, "spotOn");
     var texOnLoc = gl.getUniformLocation(program, "texOn");
     
-    document.onkeydown = document.onkeyup = function (e) {
-        e = e || window.event;
-        if (Object.keys(keys).indexOf(e.keyCode.toString()) == -1) return;
-        keys[e.keyCode] = e.type == 'keydown';
-    };
-    
     document.onkeypress = function(e){
         e = e || window.event;
         var code = e.keyCode;
@@ -17,7 +11,7 @@ function configureButtons(document, gl, program) {
             if (!Snake.turningRight){
                 Snake.turningLeft = true;
             }
-            return
+            return;
         }
         if (code === 39) { // ->
             if (!Snake.turningLeft){

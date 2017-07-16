@@ -7,38 +7,18 @@ var label;
 
 var matrix = [];
 
-var objects = {'snake' : [], 'bonus' : [], 'world' : [], 'sea' : []};
+var objects = {'snake' : [], 'bonus' : [], 'world' : [], 'sea' : [], 'sky' : []};
 var objKeys = [];
 
 var vBuffer, nBuffer, tBuffer, iBuffer;
 var vPosition, vNormal, vTexCoord;
 
-var moveVar = 0;
-var freqVar = 1;
+var moveVar = 0,freqVar = 1;
 
-var yaw = 0.0;
-var pitch = -30.0 * Math.PI / 180.0;
-
-var eye = vec3 (0.5, 2.0, -6.0);
-var at = vec3 (0.5, 0.0, 0.0);
-var newAt = [0.0, 0.0, 0.0];
-newAt[0] = -Math.sin (yaw) * Math.cos (pitch);
-newAt[1] = Math.sin (pitch);
-newAt[2] = Math.cos (pitch) * Math.cos (yaw);
-for (var i = 0; i < 3; i++) at[i] = eye[i] + newAt[i];
-var up = vec3(0.0, 1.0, 0.0);
-
-var fovy = 45.0, aspect, near = 0.1, far;
-var view = lookAt (eye, at, up);
-var viewNorm = normalMatrix (view, false);
-var proj;
+//var fovy = 45.0, aspect, near = 0.1, far;
 
 var dirDirection = [45.0, 45.0, 45.0, 0.0];
-var posPosition = [0.0, 25.0, 0.0, 1.0];
-
-var keys = {'87' : false, '68' : false, '83' : false, '65' : false,
-            '38' : false, '39' : false, '40' : false, '37' : false};
-var keysKeys = Object.keys(keys);
+var posPosition = [0.5, 15, 0.0, 1.0];
 
 var modelLoc, modelNormLoc, viewLoc, viewNormLoc, projLoc;
 var dirDirLoc, posPosLoc, spotPosLoc, spotDirLoc, spotCutoffLoc;
@@ -73,10 +53,6 @@ function draw() {
 }
 
 window.onload = function () {
-	
-	
-    label = document.getElementById("label") ; 
-	
     var canvas = document.getElementById("gl-canvas");
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
@@ -117,6 +93,11 @@ window.onload = function () {
     var seaImage = new Image ();
     seaImage.onload = function () { loadTexture (seaTex, seaImage); };
     seaImage.src = 'sea_512.jpg';
+    
+    var skyTex = gl.createTexture();
+    var skyImage = new Image ();
+    skyImage.onload = function () { loadTexture (skyTex, skyImage); };
+    skyImage.src = 'clouds_512.png';
      
     configureWorld (16, 16, 16, worldTex);
     objects['world'].push (new World ());
@@ -129,29 +110,26 @@ window.onload = function () {
     }
     
     configureSnake (15, snakeTex);
-    objects['snake'].push (new Snake());
+    objects['snake'].push (new Snake ());
     
     configureBonus (0.23, 30, 2, bonusTex);
     objects['bonus'].push (new Bonus (0.5, 3.5));
     matrix[World.height / 2][3 + World.width / 2] = 'b';
     
-    configureSea (40, 40, 20, seaTex);
+    configureSea (50, 50, 20, seaTex);
     objects['sea'].push (new Sea ());
     
-    
-    if (canvas.width < canvas.height) aspect = canvas.height / canvas.width;
-    else aspect = canvas.width / canvas.height;
-    far = Math.sqrt (Math.pow (World.width, 2.0) + Math.pow (World.height, 2.0));
-    proj = perspective(fovy, aspect, near, far);
+    configureSky (25, 20, 50, skyTex);
+    objects['sky'].push (new Sky ());
     
     window.onresize = function () {
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
         gl.viewport(0, 0, canvas.width, canvas.height);
-        if (canvas.width < canvas.height) aspect = canvas.height / canvas.width;
-        else aspect = canvas.width / canvas.height;
-        far = Math.sqrt (Math.pow (World.width, 2.0) + Math.pow (World.height, 2.0));
-        proj = perspective(fovy, aspect, near, far);
+        if (canvas.width < canvas.height) var aspect = canvas.height / canvas.width;
+        else var aspect = canvas.width / canvas.height;
+        var far = 2 * Sky.radius;
+        var proj = perspective(45.0, aspect, 0.1, far);
         gl.uniformMatrix4fv(projLoc, false, flatten(proj));
     };
     
@@ -182,13 +160,20 @@ window.onload = function () {
     spotCutoffLoc = gl.getUniformLocation(program, "spotCutoffAngle");
     
     eyeDistLoc = gl.getUniformLocation(program, "eyeDist");
-
+    
+    if (canvas.width < canvas.height) var aspect = canvas.height / canvas.width;
+    else var aspect = canvas.width / canvas.height;
+    var far = 2 * Sky.radius;
+    var proj = perspective(45.0, aspect, 0.1, far);
+    
     gl.uniformMatrix4fv(projLoc, false, flatten(proj));
+    
+    gl.uniform4fv(dirDirLoc, dirDirection);
+    gl.uniform4fv(posPosLoc, posPosition);
     
     gl.activeTexture(gl.TEXTURE0);
     
     render();
-    
 };
 
 var render = function () { 
@@ -197,18 +182,14 @@ var render = function () {
     var snake = objects['snake'][0];
     if (moveVar % freqVar === 0) {
         snake.move();
-        view = lookAt (snake.eye, snake.at, snake.up);
-        viewNorm = normalMatrix(view, false);
+        var view = lookAt (snake.eye, snake.at, snake.up);
+        var viewNorm = normalMatrix(view, false);
+        gl.uniformMatrix4fv(viewLoc, false, flatten(view));
+        gl.uniformMatrix4fv(viewNormLoc, false, flatten(viewNorm));
     }
     moveVar += 1;
     
     objects['sea'][0].move();
-    
-    gl.uniformMatrix4fv(viewLoc, false, flatten(view));
-    gl.uniformMatrix4fv(viewNormLoc, false, flatten(viewNorm));
-    
-    gl.uniform4fv(dirDirLoc, dirDirection);
-    gl.uniform4fv(posPosLoc, posPosition);
     
     var bonus = objects['bonus'][0];
     gl.uniform4fv(spotPosLoc, bonus.spotPosition);
@@ -248,8 +229,9 @@ var render = function () {
                 obj.modelNorm = normalMatrix(obj.model, false);
                 obj.eat();
             }
-            if (objKeys[i] !== 'world' && objKeys[i] !== 'sea') {
-                gl.uniform1f(eyeDistLoc, length (subtract (obj.obstacle, eye)));
+            if (objKeys[i] !== 'world' && objKeys[i] !== 'sea' && objKeys[i] !== 'sky') {
+                gl.uniform1f(eyeDistLoc,
+                             length (subtract (obj.obstacle, objects['snake'][0].eye)));
             }
             else gl.uniform1f(eyeDistLoc, 0.0);
             
