@@ -2,12 +2,6 @@
 
 var gl, program;
 
-var canvas1, ctx;
-var pointsLabel;
-
-var matrix = [];
-var objects = {};
-
 var vBuffer, nBuffer, tBuffer, iBuffer;
 var vPosition, vNormal, vTexCoord;
 
@@ -17,6 +11,10 @@ var posPosLoc, spotPosLoc, spotDirLoc, spotCutoffLoc;
 var posAttLoc, spotAttLoc, spotCutoffLoc;
 var eyeDistLoc;
 
+var objects = {};
+var map;
+var pointsLabel;
+
 function loadTexture (texture, image) {
     gl.bindTexture(gl.TEXTURE_2D, texture);
     gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
@@ -25,34 +23,12 @@ function loadTexture (texture, image) {
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
 }
 
-function draw() {    
-    var cw = canvas1.width;
-    var ch = canvas1.height;
-    var ww = World.height;
-    var wh = World.width;
-
-    for (var i = 0; i < wh; i++) {
-        for (var j = 0; j < ww; j++) {
-			
-            if (matrix[i][j] === 'b')
-                ctx.fillStyle = "rgb(255,0,0)"; 
-            else if (matrix[i][j] === 'h' || matrix[i][j] === 'h1')
-                ctx.fillStyle = "rgb(220,220,220)";
-            else ctx.fillStyle = "rgb(0,0,0)";
-            
-            ctx.fillRect((wh - 1 - i) * ch / wh, (ww - 1 - j) * cw / ww, cw / ww, ch / wh);
-        }
-    }
-}
-
 window.onload = function () {
     var canvas = document.getElementById("gl-canvas");
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
     
-    canvas1 = document.getElementById('map-canvas') ;
-    ctx = canvas1.getContext('2d');
-    
+    var mapCanvas = document.getElementById('map-canvas') ;    
     pointsLabel = document.getElementById("points-label") ; 
 
     gl = WebGLUtils.setupWebGL(canvas);
@@ -91,9 +67,12 @@ window.onload = function () {
     var skyImage = new Image ();
     skyImage.onload = function () { loadTexture (skyTex, skyImage); };
     skyImage.src = 'clouds_512.png';
-     
+    
     configureWorld (16, 16, 16, worldTex);
     objects['world'] = new World ();
+    
+    configureMap (World.width, World.height, mapCanvas);
+    map = new Map ();
     
     configureSnake (15, snakeTex);
     objects['snake'] = new Snake ();
@@ -104,16 +83,8 @@ window.onload = function () {
     configureSea (60, 60, 20, seaTex);
     objects['sea'] = new Sea ();
     
-    configureSky (25, 20, 50, skyTex);
+    configureSky (25, 20, 200, skyTex);
     objects['sky'] = new Sky ();
-    
-    for(var i = 0; i < World.height; i++){
-        matrix.push([]);
-        for(var j = 0;j < World.width; j++){
-            matrix[i].push('0');
-        }
-    }
-    matrix[World.height / 2][3 + World.width / 2] = 'b';
     
     if (canvas.width < canvas.height) var aspect = canvas.height / canvas.width;
     else var aspect = canvas.width / canvas.height;
@@ -180,10 +151,9 @@ window.onload = function () {
     gl.uniform4fv(specProdLoc, vec4 (1.0, 1.0, 1.0, 1.0));
     gl.uniform1f(shinLoc, 100.0);
     
-    gl.uniform4fv(posPosLoc, vec4 (0.5, 3, 5.0, 1.0));
+    gl.uniform4fv(posPosLoc, vec4 (0.0, 15.0, 0.0, 1.0));
     gl.uniform3fv(posAttLoc, vec3 (1.0, 0.01, 0.0001));
     gl.uniform3fv(spotAttLoc, vec3 (1.0, 0.01, 0.0001));
-    gl.uniform1f(spotCutoffLoc, 10.0);
     
     gl.activeTexture(gl.TEXTURE0);
     
@@ -221,10 +191,10 @@ var render = function () {
         gl.bindTexture(gl.TEXTURE_2D, obj.texture ());
         gl.uniform1i(gl.getUniformLocation(program, "tex"), 0);
         
-        if (obj instanceof Snake || obj instanceof Bonus)
-            gl.uniform1f(eyeDistLoc,
-                         length (subtract (obj.obstacle,
-                                           objects['snake'].eye)));
+        if (obj instanceof Snake || obj instanceof Bonus) {
+            var dist = length (subtract (obj.obstacle, objects['snake'].eye));
+            gl.uniform1f(eyeDistLoc, dist);
+        }
         else gl.uniform1f(eyeDistLoc, 0.0);
         
         gl.uniformMatrix4fv(modelLoc, false, flatten(obj.model));
@@ -245,7 +215,7 @@ var render = function () {
     gl.uniform4fv(spotDirLoc, bonus.spotDirection);
     gl.uniform1f(spotCutoffLoc, bonus.spotCutoff);
     
-    draw();
+    map.draw();
     
     requestAnimFrame(render);
 };

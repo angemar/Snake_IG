@@ -25,9 +25,9 @@ function configureSky (radius, height, slices, texture) {
     var indices = [];
     
     var bottom = -height / 2, top = height / 2;
-    
-    for (var j = 0; j <= slices; j++) {
-        var angle = j * 2 * Math.PI / slices;
+
+    for (var i = 0; i <= slices; i++) {
+        var angle = i * 2 * Math.PI / slices;
         var x = radius * Math.cos(angle);
         var z = radius * Math.sin(angle);
 
@@ -39,12 +39,12 @@ function configureSky (radius, height, slices, texture) {
         var n1 = sideNorm;
         var n2 = sideNorm;
 
-        var c1 = vec2 (-j / (slices / 5), 1.0);
-        var c2 = vec2 (-j / (slices / 5), 0.0);
+        var c1 = vec2 (-i / (slices / 5), 1.0);
+        var c2 = vec2 (-i / (slices / 5), 0.0);
 
         var verts = [], norms = [], coords = [];
 
-        if (j === 0){
+        if (i === 0){
             verts.push (v1);
             norms.push (n1);
             coords.push (c1);
@@ -58,7 +58,7 @@ function configureSky (radius, height, slices, texture) {
         norms.push (n2);
         coords.push (c2);
 
-        if (j === slices){
+        if (i === slices){
             verts.push (v2);
             norms.push (n2);
             coords.push (c2);

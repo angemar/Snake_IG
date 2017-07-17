@@ -24,7 +24,7 @@
                 height: 100%;
             }
             
-            #gl-canvas1 {
+            #map-canvas {
                 top: 1%;
                 left: 89%;
                 width: 10%;
@@ -84,7 +84,7 @@
 
                 gl_Position = proj * view * model * vPosition;
                 
-                if (dist > 10.0) {
+                if (dist > 5.0) {
                     float Kd, Ks;
                     
                     float posDist = distance(posPos, P);
@@ -138,7 +138,7 @@
                 vec4 pos = positional;
                 vec4 spot = spotlight;
                 
-                if (dist <= 10.0) {
+                if (dist <= 5.0) {
                     float Kd, Ks;
                     
                     float posDist = distance(posPos, P);
@@ -193,6 +193,7 @@
         <script type="text/javascript" src="snake.js"></script>
         <script type="text/javascript" src="bonus.js"></script>
         <script type="text/javascript" src="world.js"></script>
+        <script type="text/javascript" src="map.js"></script>
         <script type="text/javascript" src="sea.js"></script>
         <script type="text/javascript" src="sky.js"></script>
         <script type="text/javascript" src="light.js"></script>

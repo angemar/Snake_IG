@@ -18,7 +18,7 @@ function Snake () {
         for(var i = 0; i < len; i++) {
             var row = Math.floor(parts[i].model[0][3])+ World.height / 2;
             var col = Math.floor(parts[i].model[2][3])+ World.width / 2;
-            matrix[row][col]='0';
+            Map.matrix[row][col] = '0';
         }
        
         if (Snake.step === 0) {
@@ -80,13 +80,7 @@ function Snake () {
             parts[0].model[2][3] = tran[2];
             
             //Rotation Minimap
-            if(Snake.step === Snake.slices-1){
-                ctx.clearRect(0, 0, canvas1.width, canvas1.height);
-                ctx.translate(canvas1.width / 2, canvas1.height / 2);
-                ctx.rotate(Math.PI/2);
-                ctx.translate(-canvas1.width / 2, -canvas1.height / 2);
-                ctx.restore();
-            }
+            if(Snake.step === Snake.slices-1) map.rotate (-1);
         }
         else if (Snake.turnRightAnim) {
             var tran = mult (this.headMat, vec4 (-Snake.step / Snake.slices, 0.0, 0.0, 1.0));
@@ -95,13 +89,7 @@ function Snake () {
             parts[0].model[2][3] = tran[2];
             
             //Rotation Minimap
-            if(Snake.step === Snake.slices-1){
-                ctx.clearRect(0, 0, canvas1.width, canvas1.height);
-                ctx.translate(canvas1.width / 2, canvas1.height / 2);
-                ctx.rotate(-Math.PI/2);
-                ctx.translate(-canvas1.width / 2, -canvas1.height / 2);
-                ctx.restore();
-            }
+            if(Snake.step === Snake.slices-1) map.rotate (1);
         }
         else parts[0].model = mult (parts[0].model, translate (0.0, 0.0, 1.0 / Snake.slices));
         
@@ -195,26 +183,26 @@ function Snake () {
         
         var row = Math.floor(parts[0].model[0][3]) + World.height / 2;
         var col = Math.floor(parts[0].model[2][3])+ World.width / 2;
-        matrix[row][col] = 'h';
+        Map.matrix[row][col] = 'h';
         
         row = Math.floor(parts[1].model[0][3]) + World.height / 2;
         col = Math.floor(parts[1].model[2][3]) + World.width / 2;
-        matrix[row][col] = 'h1';
+        Map.matrix[row][col] = 'h1';
         
         for(var i=2; i<len; i++){
             var row = Math.floor(parts[i].model[0][3]) + World.height / 2;
             var col = Math.floor(parts[i].model[2][3]) + World.width / 2;
-            matrix[row][col] = 's';
+            Map.matrix[row][col] = 's';
         }
         
         row = Math.floor(parts[0].model[0][3])+ World.height / 2;
         col = Math.floor(parts[0].model[2][3])+ World.width / 2;
-        if(matrix[row][col] === 's'){
+        if(Map.matrix[row][col] === 's'){
             alert("GAME OVER!\nPress OK to restart the game!");
             window.location.reload(false); 
         }
         
-        Snake.step = (Snake.step + 1) % (Snake.slices);
+        Snake.step = (Snake.step + 1) % Snake.slices;
     };
 }
 
