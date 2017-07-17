@@ -3,25 +3,18 @@
 var gl, program;
 
 var canvas1, ctx;
-var label;
+var pointsLabel;
 
 var matrix = [];
-
-var objects = {'snake' : [], 'bonus' : [], 'world' : [], 'sea' : [], 'sky' : []};
-var objKeys = [];
+var objects = {};
 
 var vBuffer, nBuffer, tBuffer, iBuffer;
 var vPosition, vNormal, vTexCoord;
 
-var moveVar = 0,freqVar = 1;
-
-//var fovy = 45.0, aspect, near = 0.1, far;
-
-var dirDirection = [45.0, 45.0, 45.0, 0.0];
-var posPosition = [0.5, 15, 0.0, 1.0];
-
 var modelLoc, modelNormLoc, viewLoc, viewNormLoc, projLoc;
-var dirDirLoc, posPosLoc, spotPosLoc, spotDirLoc, spotCutoffLoc;
+var ambProdLoc, diffProdLoc, specProdLoc, shinLoc;
+var posPosLoc, spotPosLoc, spotDirLoc, spotCutoffLoc;
+var posAttLoc, spotAttLoc, spotCutoffLoc;
 var eyeDistLoc;
 
 function loadTexture (texture, image) {
@@ -57,10 +50,10 @@ window.onload = function () {
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
     
-    canvas1 = document.getElementById('gl-canvas1') ;
+    canvas1 = document.getElementById('map-canvas') ;
     ctx = canvas1.getContext('2d');
     
-    label = document.getElementById("label") ; 
+    pointsLabel = document.getElementById("points-label") ; 
 
     gl = WebGLUtils.setupWebGL(canvas);
     if (!gl) alert("WebGL isn't available");
@@ -100,7 +93,19 @@ window.onload = function () {
     skyImage.src = 'clouds_512.png';
      
     configureWorld (16, 16, 16, worldTex);
-    objects['world'].push (new World ());
+    objects['world'] = new World ();
+    
+    configureSnake (15, snakeTex);
+    objects['snake'] = new Snake ();
+    
+    configureBonus (0.25, 20, bonusTex);
+    objects['bonus'] = new Bonus (0.5, 3.5);
+    
+    configureSea (60, 60, 20, seaTex);
+    objects['sea'] = new Sea ();
+    
+    configureSky (25, 20, 50, skyTex);
+    objects['sky'] = new Sky ();
     
     for(var i = 0; i < World.height; i++){
         matrix.push([]);
@@ -108,19 +113,12 @@ window.onload = function () {
             matrix[i].push('0');
         }
     }
-    
-    configureSnake (15, snakeTex);
-    objects['snake'].push (new Snake ());
-    
-    configureBonus (0.23, 30, 2, bonusTex);
-    objects['bonus'].push (new Bonus (0.5, 3.5));
     matrix[World.height / 2][3 + World.width / 2] = 'b';
     
-    configureSea (50, 50, 20, seaTex);
-    objects['sea'].push (new Sea ());
-    
-    configureSky (25, 20, 50, skyTex);
-    objects['sky'].push (new Sky ());
+    if (canvas.width < canvas.height) var aspect = canvas.height / canvas.width;
+    else var aspect = canvas.width / canvas.height;
+    var far = 2 * Sky.radius;
+    var proj = perspective(45.0, aspect, 0.1, far);
     
     window.onresize = function () {
         canvas.width = window.innerWidth;
@@ -133,7 +131,18 @@ window.onload = function () {
         gl.uniformMatrix4fv(projLoc, false, flatten(proj));
     };
     
-    objKeys = Object.keys(objects);
+    document.onkeypress = function(e){
+        e = e || window.event;
+        var code = e.keyCode;
+        if (code === 37) { // <-
+            if (!Snake.turningRight) Snake.turningLeft = true;
+            return;
+        }
+        if (code === 39) { // ->
+            if (!Snake.turningLeft) Snake.turningRight = true;
+            return;
+        }
+    };
     
     vBuffer = gl.createBuffer();
     nBuffer = gl.createBuffer();
@@ -144,32 +153,37 @@ window.onload = function () {
     vNormal = gl.getAttribLocation(program, "vNormal");
     vTexCoord = gl.getAttribLocation(program, "vTexCoord");
     
-    configureLight(gl, program);
-    configureButtons(document, gl, program);
-    
     modelLoc = gl.getUniformLocation (program, "model");
     modelNormLoc = gl.getUniformLocation (program, "modelNorm");
     viewLoc = gl.getUniformLocation (program, "view");
     viewNormLoc = gl.getUniformLocation (program, "viewNorm");
     projLoc = gl.getUniformLocation (program, "proj");
+
+    ambProdLoc = gl.getUniformLocation(program, "ambientProduct");
+    diffProdLoc = gl.getUniformLocation(program, "diffuseProduct");
+    specProdLoc = gl.getUniformLocation(program, "specularProduct");
+    shinLoc = gl.getUniformLocation(program, "shininess");
     
-    dirDirLoc = gl.getUniformLocation(program, "dirDirection");
     posPosLoc = gl.getUniformLocation(program, "posPosition");
     spotPosLoc = gl.getUniformLocation(program, "spotPosition");
     spotDirLoc = gl.getUniformLocation(program, "spotDirection");
     spotCutoffLoc = gl.getUniformLocation(program, "spotCutoffAngle");
     
+    posAttLoc = gl.getUniformLocation(program, "posAtt");
+    spotAttLoc = gl.getUniformLocation(program, "spotAtt");
     eyeDistLoc = gl.getUniformLocation(program, "eyeDist");
     
-    if (canvas.width < canvas.height) var aspect = canvas.height / canvas.width;
-    else var aspect = canvas.width / canvas.height;
-    var far = 2 * Sky.radius;
-    var proj = perspective(45.0, aspect, 0.1, far);
-    
     gl.uniformMatrix4fv(projLoc, false, flatten(proj));
+
+    gl.uniform4fv(ambProdLoc, vec4 (0.0, 0.0, 0.0, 1.0));
+    gl.uniform4fv(diffProdLoc, vec4 (1.0, 1.0, 1.0, 1.0));
+    gl.uniform4fv(specProdLoc, vec4 (1.0, 1.0, 1.0, 1.0));
+    gl.uniform1f(shinLoc, 100.0);
     
-    gl.uniform4fv(dirDirLoc, dirDirection);
-    gl.uniform4fv(posPosLoc, posPosition);
+    gl.uniform4fv(posPosLoc, vec4 (0.5, 3, 5.0, 1.0));
+    gl.uniform3fv(posAttLoc, vec3 (1.0, 0.01, 0.0001));
+    gl.uniform3fv(spotAttLoc, vec3 (1.0, 0.01, 0.0001));
+    gl.uniform1f(spotCutoffLoc, 10.0);
     
     gl.activeTexture(gl.TEXTURE0);
     
@@ -179,67 +193,57 @@ window.onload = function () {
 var render = function () { 
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
     
-    var snake = objects['snake'][0];
-    if (moveVar % freqVar === 0) {
-        snake.move();
-        var view = lookAt (snake.eye, snake.at, snake.up);
-        var viewNorm = normalMatrix(view, false);
-        gl.uniformMatrix4fv(viewLoc, false, flatten(view));
-        gl.uniformMatrix4fv(viewNormLoc, false, flatten(viewNorm));
-    }
-    moveVar += 1;
-    
-    objects['sea'][0].move();
-    
-    var bonus = objects['bonus'][0];
-    gl.uniform4fv(spotPosLoc, bonus.spotPosition);
-    gl.uniform4fv(spotDirLoc, bonus.spotDirection);
-    gl.uniform1f(spotCutoffLoc, bonus.spotCutoff);
+    var objKeys = Object.keys(objects);
     
     for (var i = 0; i < objKeys.length; i++) {
-        if (objects[objKeys[i]].length === 0) continue;
+        var obj = objects[objKeys[i]];
         
-        var proto = objects[objKeys[i]][0];
+        obj.move();
         
         gl.bindBuffer (gl.ELEMENT_ARRAY_BUFFER, iBuffer);
-        gl.bufferData (gl.ELEMENT_ARRAY_BUFFER, proto.indices (), gl.DYNAMIC_DRAW);
+        gl.bufferData (gl.ELEMENT_ARRAY_BUFFER, obj.indices (), gl.DYNAMIC_DRAW);
         
         gl.bindBuffer(gl.ARRAY_BUFFER, vBuffer);
-        gl.bufferData(gl.ARRAY_BUFFER, flatten (proto.vertices ()), gl.DYNAMIC_DRAW);
+        gl.bufferData(gl.ARRAY_BUFFER, flatten (obj.vertices ()), gl.DYNAMIC_DRAW);
         gl.vertexAttribPointer(vPosition, 4, gl.FLOAT, false, 0, 0);
         gl.enableVertexAttribArray(vPosition);
 
         gl.bindBuffer(gl.ARRAY_BUFFER, nBuffer);
-        gl.bufferData(gl.ARRAY_BUFFER, flatten (proto.normals ()), gl.DYNAMIC_DRAW);
+        gl.bufferData(gl.ARRAY_BUFFER, flatten (obj.normals ()), gl.DYNAMIC_DRAW);
         gl.vertexAttribPointer(vNormal, 4, gl.FLOAT, false, 0, 0);
         gl.enableVertexAttribArray(vNormal);
         
         gl.bindBuffer(gl.ARRAY_BUFFER, tBuffer);
-        gl.bufferData(gl.ARRAY_BUFFER, flatten (proto.texCoords ()), gl.DYNAMIC_DRAW);
+        gl.bufferData(gl.ARRAY_BUFFER, flatten (obj.texCoords ()), gl.DYNAMIC_DRAW);
         gl.vertexAttribPointer(vTexCoord, 2, gl.FLOAT, false, 0, 0);
         gl.enableVertexAttribArray(vTexCoord);
         
-        gl.bindTexture(gl.TEXTURE_2D, proto.texture ());
+        gl.bindTexture(gl.TEXTURE_2D, obj.texture ());
         gl.uniform1i(gl.getUniformLocation(program, "tex"), 0);
         
-        for (var j = 0; j < objects[objKeys[i]].length; j++) {
-            var obj = objects[objKeys[i]][j];
-            if(objKeys[i] === 'bonus') { 
-                obj.model = mult(obj.model, Bonus.rotMat);
-                obj.modelNorm = normalMatrix(obj.model, false);
-                obj.eat();
-            }
-            if (objKeys[i] !== 'world' && objKeys[i] !== 'sea' && objKeys[i] !== 'sky') {
-                gl.uniform1f(eyeDistLoc,
-                             length (subtract (obj.obstacle, objects['snake'][0].eye)));
-            }
-            else gl.uniform1f(eyeDistLoc, 0.0);
-            
-            gl.uniformMatrix4fv(modelLoc, false, flatten(obj.model));
-            gl.uniformMatrix4fv(modelNormLoc, false, flatten(obj.modelNorm));
-            gl.drawElements(gl.TRIANGLE_STRIP, proto.indices().length, gl.UNSIGNED_SHORT, 0);
-        }
+        if (obj instanceof Snake || obj instanceof Bonus)
+            gl.uniform1f(eyeDistLoc,
+                         length (subtract (obj.obstacle,
+                                           objects['snake'].eye)));
+        else gl.uniform1f(eyeDistLoc, 0.0);
+        
+        gl.uniformMatrix4fv(modelLoc, false, flatten(obj.model));
+        gl.uniformMatrix4fv(modelNormLoc, false, flatten(obj.modelNorm));
+        
+        gl.drawElements(gl.TRIANGLE_STRIP, obj.indices().length, gl.UNSIGNED_SHORT, 0);
     }
+    
+    var snake = objects['snake'];
+    var bonus = objects['bonus'];
+    
+    var view = lookAt (snake.eye, snake.at, snake.up);
+    var viewNorm = normalMatrix(view, false);
+    
+    gl.uniformMatrix4fv(viewLoc, false, flatten(view));
+    gl.uniformMatrix4fv(viewNormLoc, false, flatten(viewNorm));
+    gl.uniform4fv(spotPosLoc, bonus.spotPosition);
+    gl.uniform4fv(spotDirLoc, bonus.spotDirection);
+    gl.uniform1f(spotCutoffLoc, bonus.spotCutoff);
     
     draw();
     

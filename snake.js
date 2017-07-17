@@ -189,7 +189,7 @@ function Snake () {
            Math.floor(parts[0].model[0][3])+ World.height / 2 > World.width - 1 ||
            Math.floor(parts[0].model[2][3])+ World.height / 2 < 0 ||
            Math.floor(parts[0].model[2][3])+ World.height / 2 > World.height - 1) {
-                alert("GAME OVER!\nPress OK to restart the game!");
+                alert ("GAME OVER!\nPress OK to restart the game!");
                 window.location.reload(false); 
         }
         

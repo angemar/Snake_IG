@@ -1,9 +1,11 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
     <head>
+        <meta charset="utf-8"/>
         <title>SNAKE Project</title>
         <style>
-            * { margin: 0;
+            * {
+                margin: 0;
                 padding: 0;
             }
 
@@ -20,13 +22,6 @@
             #gl-canvas {
                 width: 100%;
                 height: 100%;
-            }
-            
-            #buttons {
-                top: 1%;
-                left: 1%;
-                width: 100%;
-                position: absolute;
             }
             
             #gl-canvas1 {
@@ -48,30 +43,25 @@
                 text-align: center;
                 vertical-align: middle;
             }
-            
         </style>
         <script id="vertex-shader" type="x-shader/x-vertex">
             attribute vec4 vPosition, vNormal;
             attribute vec2 vTexCoord;
 
             uniform mat4 model, modelNorm, view, viewNorm, proj;
-            uniform vec4 posPosition, spotPosition, dirDirection, spotDirection;
+            uniform vec4 posPosition, spotPosition, spotDirection;
             uniform vec4 ambientProduct, diffuseProduct, specularProduct;
-            uniform float dirOn, posOn, spotOn, texOn;
             uniform float shininess, spotCutoffAngle, eyeDist;
             uniform vec3 posAtt, spotAtt;
 
-            varying vec3 P, N, dirDir, posPos, spotPos, spotDir;
-            varying vec4 ambProd, diffProd, specProd;
-            varying vec4 directional, positional, spotlight;
-            varying float fDirOn, fPosOn, fSpotOn, fTexOn, dist, shin, spotCutoff;
-            varying vec3 fPosAtt, fSpotAtt;
+            varying vec4 ambProd, diffProd, specProd, positional, spotlight;
+            varying vec3 P, N, posPos, spotPos, spotDir, fPosAtt, fSpotAtt;
+            varying float dist, shin, spotCutoff;
             varying vec2 texCoord;
 
             void main() {
                 P = (view * model * vPosition).xyz;
                 N = normalize ((viewNorm * modelNorm * vNormal).xyz);
-                dirDir = normalize ((viewNorm * dirDirection).xyz);
                 posPos = (view * posPosition).xyz;
                 spotPos = (view * spotPosition).xyz;
                 spotDir = normalize ((viewNorm * spotDirection).xyz);
@@ -80,14 +70,9 @@
                 diffProd = diffuseProduct;
                 specProd = specularProduct;
 
-                directional = vec4(0.0, 0.0, 0.0, 0.0);
                 positional = vec4(0.0, 0.0, 0.0, 0.0);
                 spotlight = vec4(0.0, 0.0, 0.0, 0.0);
 
-                fDirOn = dirOn;
-                fPosOn = posOn;
-                fSpotOn = spotOn;
-                fTexOn = texOn;
                 dist = eyeDist;
                 shin = shininess;
                 spotCutoff = spotCutoffAngle;
@@ -118,59 +103,40 @@
                     
                     vec4 ambient = ambientProduct, diffuse, specular;
                     
-                    if (dirOn != 0.0){
-                        vec3 dirL = normalize(dirDir);
-                        vec3 dirH = normalize(dirL + normalize (-P));
-                        Kd = max(dot(dirL, N), 0.0);
-                        diffuse = Kd * diffuseProduct;
-                        Ks = pow(max(dot(N, dirH), 0.0), shininess);
-                        specular = Ks * specularProduct;
-                        if(dot(dirL, N) < 0.0) specular = vec4(0.0, 0.0, 0.0, 1.0);
-                        directional = ambient + diffuse + specular;
-                    }
-                    if (posOn != 0.0){
-                        vec3 posL = normalize(posPos - P);
-                        vec3 posH = normalize(posL + normalize (-P));
-                        Kd = max(dot(posL, N), 0.0);
-                        diffuse = Kd * diffuseProduct / posTotAtt;
-                        Ks = pow(max(dot(N, posH), 0.0), shininess);
-                        specular = Ks * specularProduct / posTotAtt;
-                        if(dot(posL, N) < 0.0) specular = vec4(0.0, 0.0, 0.0, 1.0);
-                        positional = ambient + diffuse + specular;
-                    }
-                    if (spotOn != 0.0 && spotCos > spotCut){
-                        vec3 spotH = normalize(spotL + normalize (-P));
-                        Kd = max(dot(spotL, N), 0.0);
-                        diffuse = Kd * diffuseProduct / spotTotAtt;
-                        Ks = pow(max(dot(N, spotH), 0.0), shininess);
-                        specular = Ks * specularProduct / spotTotAtt;
-                        if(dot(spotL, N) < 0.0) specular = vec4(0.0, 0.0, 0.0, 1.0);
-                        float spotDif = 1.0 - spotCut;
-                        float spotFactor = clamp((spotCos - spotCut) / spotDif, 0.0, 1.0);
-                        spotlight = ambient + (diffuse + specular) * spotFactor;
-                    }
+                    vec3 posL = normalize(posPos - P);
+                    vec3 posH = normalize(posL + normalize (-P));
+                    Kd = max(dot(posL, N), 0.0);
+                    diffuse = Kd * diffuseProduct / posTotAtt;
+                    Ks = pow(max(dot(N, posH), 0.0), shininess);
+                    specular = Ks * specularProduct / posTotAtt;
+                    if(dot(posL, N) < 0.0) specular = vec4(0.0, 0.0, 0.0, 1.0);
+                    positional = ambient + diffuse + specular;
+                    
+                    vec3 spotH = normalize(spotL + normalize (-P));
+                    Kd = max(dot(spotL, N), 0.0);
+                    diffuse = Kd * diffuseProduct / spotTotAtt;
+                    Ks = pow(max(dot(N, spotH), 0.0), shininess);
+                    specular = Ks * specularProduct / spotTotAtt;
+                    if(dot(spotL, N) < 0.0) specular = vec4(0.0, 0.0, 0.0, 1.0);
+                    float spotDif = 1.0 - spotCut;
+                    float spotFactor = clamp((spotCos - spotCut) / spotDif, 0.0, 1.0);
+                    spotlight = ambient + (diffuse + specular) * spotFactor;
                 }
             }
         </script>
-
         <script id="fragment-shader" type="x-shader/x-fragment">
             precision mediump float;
 
             uniform sampler2D tex;
 
-            varying vec3 P, N, dirDir, posPos, spotPos, spotDir;
-            varying vec4 ambProd, diffProd, specProd;
-            varying vec4 directional, positional, spotlight;
-            varying float fDirOn, fPosOn, fSpotOn, fTexOn, dist;
-            varying float shin, spotCutoff;
-            varying vec3 fPosAtt, fSpotAtt;
+            varying vec4 ambProd, diffProd, specProd, positional, spotlight;
+            varying vec3 P, N, posPos, spotPos, spotDir, fPosAtt, fSpotAtt;
+            varying float dist, shin, spotCutoff;
             varying vec2 texCoord;
 
             void main() {
-                vec4 dir = directional;
                 vec4 pos = positional;
                 vec4 spot = spotlight;
-                
                 
                 if (dist <= 10.0) {
                     float Kd, Ks;
@@ -190,44 +156,31 @@
                     float spotCos = dot(normalize(spotDir), spotL);
                     
                     vec4 ambient = ambProd, diffuse, specular;
-                    if (fDirOn != 0.0){
-                        vec3 dirL = normalize(dirDir);
-                        vec3 dirH = normalize(dirL + normalize (-P));
-                        Kd = max(dot(dirL, N), 0.0);
-                        diffuse = Kd * diffProd;
-                        Ks = pow(max(dot(N, dirH), 0.0), shin);
-                        specular = Ks * specProd;
-                        if(dot(dirL, N) < 0.0) specular = vec4(0.0, 0.0, 0.0, 1.0);
-                        dir = ambient + diffuse + specular;
-                    }
-                    if (fPosOn != 0.0){
-                        vec3 posL = normalize(posPos - P);
-                        vec3 posH = normalize(posL + normalize (-P));
-                        Kd = max(dot(posL, N), 0.0);
-                        diffuse = Kd * diffProd / posTotAtt;
-                        Ks = pow(max(dot(N, posH), 0.0), shin);
-                        specular = Ks * specProd / posTotAtt;
-                        if(dot(posL, N) < 0.0) specular = vec4(0.0, 0.0, 0.0, 1.0);
-                        pos = ambient + diffuse + specular;
-                    }
-                    if (fSpotOn != 0.0 && spotCos > spotCut){
-                        vec3 spotH = normalize(spotL + normalize (-P));
-                        Kd = max(dot(spotL, N), 0.0);
-                        diffuse = Kd * diffProd / spotTotAtt;
-                        Ks = pow(max(dot(N, spotH), 0.0), shin);
-                        specular = Ks * specProd / spotTotAtt;
-                        if(dot(spotL, N) < 0.0) specular = vec4(0.0, 0.0, 0.0, 1.0);
-                        float spotDif = 1.0 - spotCut;
-                        float spotFactor = clamp((spotCos - spotCut) / spotDif, 0.0, 1.0);
-                        spot = ambient + (diffuse + specular) * spotFactor;
-                    }
+                    
+                    vec3 posL = normalize(posPos - P);
+                    vec3 posH = normalize(posL + normalize (-P));
+                    Kd = max(dot(posL, N), 0.0);
+                    diffuse = Kd * diffProd / posTotAtt;
+                    Ks = pow(max(dot(N, posH), 0.0), shin);
+                    specular = Ks * specProd / posTotAtt;
+                    if(dot(posL, N) < 0.0) specular = vec4(0.0, 0.0, 0.0, 1.0);
+                    pos = ambient + diffuse + specular;
+
+                    vec3 spotH = normalize(spotL + normalize (-P));
+                    Kd = max(dot(spotL, N), 0.0);
+                    diffuse = Kd * diffProd / spotTotAtt;
+                    Ks = pow(max(dot(N, spotH), 0.0), shin);
+                    specular = Ks * specProd / spotTotAtt;
+                    if(dot(spotL, N) < 0.0) specular = vec4(0.0, 0.0, 0.0, 1.0);
+                    float spotDif = 1.0 - spotCut;
+                    float spotFactor = clamp((spotCos - spotCut) / spotDif, 0.0, 1.0);
+                    spot = ambient + (diffuse + specular) * spotFactor;
                 }
-                gl_FragColor = dir + pos + spot;
-                if (fTexOn != 0.0) gl_FragColor *= texture2D(tex, texCoord);
+                
+                gl_FragColor = (pos + spot) * texture2D(tex, texCoord);
                 gl_FragColor.a = 1.0;
             }
         </script>
-
         <script type="text/javascript" src="Common/webgl-utils.js"></script>
         <script type="text/javascript" src="Common/initShaders.js"></script>
         <script type="text/javascript" src="Common/MV.js"></script>
@@ -251,18 +204,10 @@
                 Oops ... your browser doesn't support the HTML5 canvas element
             </canvas>
             
-             <canvas id="gl-canvas1" width="80" height="80">
+             <canvas id="map-canvas" width="80" height="80">
                 Oops ... your browser doesn't support the HTML5 canvas element
             </canvas>
-            
-            <label id="label" >Points : 0</label><br>
-            
-            <menu id="buttons">
-                <!-- <button id = "ButtonDir">Dir Light on/off</button>
-                <button id = "ButtonPos">Pos Light on/off</button>
-                <button id = "ButtonSpot">Spot Light on/off</button>
-                <button id="ButtonTex">Texture on/off</button> -->
-            </menu>
+            <label id="points-label" >Points : 0</label>
         </div>
     </body>
 </html>

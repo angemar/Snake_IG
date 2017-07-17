@@ -11,9 +11,9 @@ function Sea () {
     this.texture = function () { return Sea.texture; };
     
     this.move = function () {
-        var seaCoords = Sea.texCoords;
-        for(var i = 0; i < seaCoords.length; i++)
-            seaCoords[i][1] += 0.005 * Math.sin(this.seaWave * Math.PI / 180.0);
+        var delta = 0.01 * Math.sin(this.seaWave * Math.PI / 180.0);
+        this.model = mult (this.model, translate (delta, 0.0, delta));
+        this.modelNorm = normalMatrix(this.model, false);
         this.seaWave = (this.seaWave + 1) % 360;
     };
 }

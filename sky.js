@@ -1,5 +1,5 @@
 function Sky () {
-    this.model = translate(0.0, 0.0, 0.0);
+    this.model = translate(0.0, -3.0, 0.0);
     this.modelNorm = normalMatrix(this.model, false);
 
     var obst = mult(this.model, vec4(0.0, 0.0, 0.0, 1.0));
@@ -11,6 +11,11 @@ function Sky () {
     this.texCoords = function () { return Sky.texCoords; };
     this.texture = function () { return Sky.texture; };
     this.indices = function () { return Sky.indices; };
+    
+    this.move = function () {
+        this.model = mult (this.model, rotateY (0.1));
+        this.modelNorm = normalMatrix(this.model, false);
+    };
 }
 
 function configureSky (radius, height, slices, texture) {
@@ -20,9 +25,9 @@ function configureSky (radius, height, slices, texture) {
     var indices = [];
     
     var bottom = -height / 2, top = height / 2;
-
-    for (var i = 0; i <= slices; i++) {
-        var angle = i * 2 * Math.PI / slices;
+    
+    for (var j = 0; j <= slices; j++) {
+        var angle = j * 2 * Math.PI / slices;
         var x = radius * Math.cos(angle);
         var z = radius * Math.sin(angle);
 
@@ -34,12 +39,12 @@ function configureSky (radius, height, slices, texture) {
         var n1 = sideNorm;
         var n2 = sideNorm;
 
-        var c1 = vec2 (-i / (slices / 5), 1.0);
-        var c2 = vec2 (-i / (slices / 5), 0.0);
+        var c1 = vec2 (-j / (slices / 5), 1.0);
+        var c2 = vec2 (-j / (slices / 5), 0.0);
 
         var verts = [], norms = [], coords = [];
 
-        if (i === 0){
+        if (j === 0){
             verts.push (v1);
             norms.push (n1);
             coords.push (c1);
@@ -53,7 +58,7 @@ function configureSky (radius, height, slices, texture) {
         norms.push (n2);
         coords.push (c2);
 
-        if (i === slices){
+        if (j === slices){
             verts.push (v2);
             norms.push (n2);
             coords.push (c2);

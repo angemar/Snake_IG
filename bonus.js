@@ -9,33 +9,26 @@ function Bonus(tranX, tranZ) {
     this.spotDirection = vec4 (0.0, 1.0, 0.0, 1.0);
     this.spotCutoff = 15.0;
 
-    this.vertices = function () {
-        return Bonus.vertices;
-    };
-    this.normals = function () {
-        return Bonus.normals;
-    };
-    this.texCoords = function () {
-        return Bonus.texCoords;
-    };
-    this.indices = function () {
-        return Bonus.indices;
-    };
-    this.texture = function () {
-        return Bonus.texture;
-    };
-
-    this.eat = function () {
-        var snake = objects['snake'][0];
+    this.vertices = function () { return Bonus.vertices; };
+    this.normals = function () { return Bonus.normals; };
+    this.texCoords = function () { return Bonus.texCoords; };
+    this.indices = function () { return Bonus.indices; };
+    this.texture = function () { return Bonus.texture; };
+    
+    this.move = function () {
+        this.model = mult (this.model, rotateY (1.0));
+        this.modelNorm = normalMatrix(this.model, false);
+        
+        var snake = objects['snake'];
 
         var parts = snake.parts();
         var x1 = parts[0].model[0][3];
         var x2 = this.model[0][3];
         var y1 = parts[0].model[2][3];
         var y2 = this.model[2][3];
-        if (Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2)) < 0.23) {
+        if (Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2)) < Bonus.radius) {
             Bonus.points += 1;
-            label.innerHTML = "Points : " + Bonus.points.toString();
+            pointsLabel.innerHTML = "Points : " + Bonus.points.toString();
 
             if (Bonus.points === Bonus.winPoints) {
                 alert ("YOU WIN!\nPress OK to restart the game!");
@@ -63,7 +56,7 @@ function Bonus(tranX, tranZ) {
     };
 }
 
-function configureBonus(radius, slices, rotAngle, texture) {
+function configureBonus(radius, slices, texture) {
     var vertices = [];
     var normals = [];
     var texCoords = [];
@@ -147,7 +140,6 @@ function configureBonus(radius, slices, rotAngle, texture) {
     Bonus.radius = radius;
     Bonus.slices = slices;
     Bonus.texture = texture;
-    Bonus.rotMat = rotate(0.0, rotAngle, 0.0, 0.0);
 
     Bonus.vertices = vertices;
     Bonus.normals = normals;

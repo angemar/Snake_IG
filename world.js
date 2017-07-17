@@ -9,6 +9,8 @@ function World () {
     this.texCoords = function () { return World.texCoords; };
     this.indices = function () { return World.indices; };
     this.texture = function () { return World.texture; };
+    
+    this.move = function () { return; };
 }
 
 function configureWorld (width, height, slices, texture) {
