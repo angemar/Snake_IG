@@ -226,12 +226,12 @@ var render = function () {
     }else if(winner){
         alert ("Points: "+Bonus.points+"/"+Bonus.winPoints+"\nYOU WIN!\nPress OK to restart the game!");
         winner=false;
-        window.location.reload(false);
+        window.location.href="start.html";
         
     }else if(dead){
         alert("Points: "+Bonus.points+"/"+Bonus.winPoints+"\nGAME OVER!\nPress OK to restart the game!");
         dead=false;
-        window.location.reload(false); 
+        window.location.href="start.html";
     }
     
     requestAnimFrame(render);
