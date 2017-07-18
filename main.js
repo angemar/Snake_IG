@@ -16,6 +16,11 @@ var map;
 var pointsLabel;
 var pause=false, dead=false, winner=false;
 
+var audioEat = new Audio('musicEat.mp3');
+var audioWin = new Audio('musicWin.mp3');
+var audioLose = new Audio('musicLose.mp3');
+
+
 function loadTexture (texture, image) {
     gl.bindTexture(gl.TEXTURE_2D, texture);
     gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
@@ -25,6 +30,7 @@ function loadTexture (texture, image) {
 }
 
 window.onload = function () {
+    
     var canvas = document.getElementById("gl-canvas");
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
@@ -223,12 +229,15 @@ var render = function () {
     if(pause){
         alert("Game in pause! Press OK to play!");
         pause = false;
+        audio.play();
     }else if(winner){
+        audioWin.play();
         alert ("Points: "+Bonus.points+"/"+Bonus.winPoints+"\nYOU WIN!\nPress OK to restart the game!");
         winner=false;
         window.location.href="start.html";
         
     }else if(dead){
+        audioLose.play();
         alert("Points: "+Bonus.points+"/"+Bonus.winPoints+"\nGAME OVER!\nPress OK to restart the game!");
         dead=false;
         window.location.href="start.html";
