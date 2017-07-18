@@ -1,57 +1,79 @@
 <!DOCTYPE html>
-<html>
-<head>
-<title>Snake</title>
-<style>
-		* { margin: 0;
-			padding: 0;
-		}
+<html lang="en">
+    <head>
+        <meta charset="utf-8"/>
+        <title>SNAKE Project</title>
+        <style>
+            * {
+                margin: 0;
+                padding: 0;
+            }
 
-		body, html {
-			height: 100%;
-			width: 100%;
-			background-repeat: no-repeat;
-			background-attachment: fixed;
-			background-opacity: 1.5;
-		}
-		
-		img{
-				top: 10%;
-			left:  30%;
-		position: absolute;
-		
-		}
-		
-	button {
-		background-color: black;/* Green */
-		border: 2px solid red;
-		color: red;
-		border-radius: 50%;
-		padding: 14px 40px;
-		text-align: center;
-		text-decoration: none;
-		display: inline-block;
-		font-size: 20px;
-		top: 50%;
-        left:  45%;
-		position: absolute;
-		box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);
-		        
-	}
-	button:hover {
-    background-color: white; /* Green */
-    color: red;
-    box-shadow: 0 12px 16px 0 rgba(0,0,0,0.24), 0 17px 50px 0 rgba(0,0,0,0.19);
-}
+            body, html {
+                width: 100%;
+                height: 100%;
+                background-repeat: no-repeat;
+                background-attachment: fixed;
 
-</style>
-</head>
-<body background="background.jpg">
-	
-	<img src="title.png" alt="snake">
-	
-	<button name="button" onclick="location.href='main.html'">PLAY</button>
-	
-	
-</body>
+            }
+            
+            #extContainer {
+                width: 100%;
+                height: 99.5%;
+                position: absolute;
+            }
+            
+            #background {
+                width: 100%;
+                height: 100%;
+                position: absolute;
+            }
+            
+            #intContainer {
+                margin-left: auto;
+                margin-right: auto;
+                top: 15%;
+                width: 50%;
+                height: 50%;
+                position: relative;
+            }
+            
+            #snake {
+                width: 100%;
+                height: 100%;
+            }
+
+            #playButton {
+                top: 65%;
+                left:  25%;
+                position: absolute;
+                background-color: black;
+                border: 2px solid red;
+                color: red;
+                border-radius: 50%;
+                padding: 14px 40px;
+                text-align: center;
+                display: inline-block;
+                font-size: 20px;
+                box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);
+
+            }
+            #playButton:hover {
+                background-color: green;
+                color: black;
+                box-shadow: 0 12px 16px 0 rgba(0,0,0,0.24), 0 17px 50px 0 rgba(0,0,0,0.19);
+            }
+        </style>
+
+
+    </head>
+    <body>
+        <div id="extContainer">
+            <img id="background" src="background.jpg" alt="background"/>
+            <div id="intContainer">
+                <img id="snake" src="title.png" alt="snake">
+                <button id="playButton" onclick="location.href = 'main.html'">PLAY</button>
+            </div>
+        </div>
+    </body>
 </html>
