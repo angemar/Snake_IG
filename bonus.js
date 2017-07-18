@@ -34,6 +34,7 @@ function Bonus(tranX, tranZ) {
 
             if (Bonus.points === Bonus.winPoints) {
                 winner = true;
+		return;
             }
             
             var row = Math.floor(this.model[0][3]) + World.height / 2;

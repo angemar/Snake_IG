@@ -178,6 +178,7 @@ function Snake () {
            Math.floor(parts[0].model[2][3])+ World.height / 2 < 0 ||
            Math.floor(parts[0].model[2][3])+ World.height / 2 > World.height - 1) {
                 dead=true;
+		return;
         }
         
         var row = Math.floor(parts[0].model[0][3]) + World.height / 2;
