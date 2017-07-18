@@ -229,7 +229,6 @@ var render = function () {
     if(pause){
         alert("Game in pause! Press OK to play!");
         pause = false;
-        audio.play();
     }else if(winner){
         audioWin.play();
         alert ("Points: "+Bonus.points+"/"+Bonus.winPoints+"\nYOU WIN!\nPress OK to restart the game!");
