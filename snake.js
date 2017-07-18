@@ -208,7 +208,7 @@ function Snake () {
 function configureSnake (slices, texture) {
     configureSnakeHead (0.35, 0.5, slices, texture);
     configureSnakeBody (0.25, 1.0, slices, texture);
-    configureSnakeTail (0.25, 0.5, slices, texture);
+    configureSnakeTail (0.25, 1.0, slices, texture);
     configureSnakeLeftBody (0.25, slices, texture);
     configureSnakeRightBody (0.25, slices, texture);
     
