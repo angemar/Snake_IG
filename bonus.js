@@ -33,7 +33,7 @@ function Bonus(tranX, tranZ) {
             pointsLabel.innerHTML = "Points : " + Bonus.points.toString();
 
             if (Bonus.points === Bonus.winPoints) {
-                alert ("YOU WIN!\nPress OK to restart the game!");
+                alert ("Points: "+Bonus.points+"/"+Bonus.winPoints+"\nYOU WIN!\nPress OK to restart the game!");
                 window.location.reload(false);
             }
             

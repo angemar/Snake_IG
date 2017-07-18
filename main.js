@@ -14,6 +14,7 @@ var eyeDistLoc;
 var objects = {};
 var map;
 var pointsLabel;
+var pause=false;
 
 function loadTexture (texture, image) {
     gl.bindTexture(gl.TEXTURE_2D, texture);
@@ -105,6 +106,7 @@ window.onload = function () {
     document.onkeypress = function(e){
         e = e || window.event;
         var code = e.keyCode;
+        if(code === 0) code = e.charCode;
         if (code === 37) { // <-
             if (!Snake.turningRight) Snake.turningLeft = true;
             return;
@@ -113,6 +115,7 @@ window.onload = function () {
             if (!Snake.turningLeft) Snake.turningRight = true;
             return;
         }
+        if(code === 32) pause=true;
     };
     
     vBuffer = gl.createBuffer();
@@ -161,6 +164,10 @@ window.onload = function () {
 };
 
 var render = function () { 
+    if(pause){
+        alert("Game in pause! Press OK to play!");
+        pause = false;
+    }
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
     
     var objKeys = Object.keys(objects);
