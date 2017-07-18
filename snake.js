@@ -189,7 +189,7 @@ function Snake () {
         col = Math.floor(parts[1].model[2][3]) + World.width / 2;
         Map.matrix[row][col] = 'h1';
         
-        for(var i=2; i<len; i++){
+        for(var i = 2; i < len - 1; i++){
             var row = Math.floor(parts[i].model[0][3]) + World.height / 2;
             var col = Math.floor(parts[i].model[2][3]) + World.width / 2;
             Map.matrix[row][col] = 's';
@@ -209,7 +209,7 @@ function Snake () {
 function configureSnake (slices, texture) {
     configureSnakeHead (0.35, 0.5, slices, texture);
     configureSnakeBody (0.25, 1.0, slices, texture);
-    configureSnakeTail (0.25, 1.0, slices, texture);
+    configureSnakeTail (0.25, 0.5, slices, texture);
     configureSnakeLeftBody (0.25, slices, texture);
     configureSnakeRightBody (0.25, slices, texture);
     

@@ -28,8 +28,8 @@ function configureSnakeTail (radius1, radius2, slices, texture) {
     var indices = [];
     
     for (var i = 0; i < slices; i++) {
-        var angle1 = Math.PI - (i * (Math.PI / 2) / slices);
-        var nextAngle1 = Math.PI - ((i + 1) * (Math.PI / 2) / slices);
+        var angle1 = Math.PI - (i * Math.PI / slices);
+        var nextAngle1 = Math.PI - ((i + 1) * Math.PI / slices);
         
         for (var j = 0; j <= slices; j++) {
             var angle2 = j * Math.PI / slices;
@@ -42,8 +42,8 @@ function configureSnakeTail (radius1, radius2, slices, texture) {
             var y2 = radius1 * Math.sin (nextAngle1) * Math.sin (angle2);
             var z2 = radius2 * Math.cos (nextAngle1);
             
-            var v1 = vec4 (x1, y1, z1 + 0.5, 1.0);
-            var v2 = vec4 (x2, y2, z2 + 0.5, 1.0);
+            var v1 = vec4 (x1, y1, z1, 1.0);
+            var v2 = vec4 (x2, y2, z2, 1.0);
             
             var n1 = vec4 (x1, y1, z1, 1.0);
             var n2 = vec4 (x2, y2, z2, 1.0);
