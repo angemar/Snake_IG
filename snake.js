@@ -177,8 +177,7 @@ function Snake () {
            Math.floor(parts[0].model[0][3])+ World.height / 2 > World.width - 1 ||
            Math.floor(parts[0].model[2][3])+ World.height / 2 < 0 ||
            Math.floor(parts[0].model[2][3])+ World.height / 2 > World.height - 1) {
-                alert ("Points: "+Bonus.points+"/"+Bonus.winPoints+"\nGAME OVER!\nPress OK to restart the game!");
-                window.location.reload(false); 
+                dead=true;
         }
         
         var row = Math.floor(parts[0].model[0][3]) + World.height / 2;
@@ -197,9 +196,8 @@ function Snake () {
         
         row = Math.floor(parts[0].model[0][3])+ World.height / 2;
         col = Math.floor(parts[0].model[2][3])+ World.width / 2;
-        if(Map.matrix[row][col] === 's'){
-            alert("Points: "+Bonus.points+"/"+Bonus.winPoints+"\nGAME OVER!\nPress OK to restart the game!");
-            window.location.reload(false); 
+        if(Map.matrix[row][col] === 's'){ 
+            dead=true;
         }
         
         Snake.step = (Snake.step + 1) % Snake.slices;

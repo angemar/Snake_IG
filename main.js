@@ -14,7 +14,7 @@ var eyeDistLoc;
 var objects = {};
 var map;
 var pointsLabel;
-var pause=false;
+var pause=false, dead=false, winner=false;
 
 function loadTexture (texture, image) {
     gl.bindTexture(gl.TEXTURE_2D, texture);
@@ -164,10 +164,6 @@ window.onload = function () {
 };
 
 var render = function () { 
-    if(pause){
-        alert("Game in pause! Press OK to play!");
-        pause = false;
-    }
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
     
     var objKeys = Object.keys(objects);
@@ -223,6 +219,20 @@ var render = function () {
     gl.uniform1f(spotCutoffLoc, bonus.spotCutoff);
     
     map.draw();
+    
+    if(pause){
+        alert("Game in pause! Press OK to play!");
+        pause = false;
+    }else if(winner){
+        alert ("Points: "+Bonus.points+"/"+Bonus.winPoints+"\nYOU WIN!\nPress OK to restart the game!");
+        winner=false;
+        window.location.reload(false);
+        
+    }else if(dead){
+        alert("Points: "+Bonus.points+"/"+Bonus.winPoints+"\nGAME OVER!\nPress OK to restart the game!");
+        dead=false;
+        window.location.reload(false); 
+    }
     
     requestAnimFrame(render);
 };

@@ -33,8 +33,7 @@ function Bonus(tranX, tranZ) {
             pointsLabel.innerHTML = "Points : " + Bonus.points.toString();
 
             if (Bonus.points === Bonus.winPoints) {
-                alert ("Points: "+Bonus.points+"/"+Bonus.winPoints+"\nYOU WIN!\nPress OK to restart the game!");
-                window.location.reload(false);
+                winner = true;
             }
             
             var row = Math.floor(this.model[0][3]) + World.height / 2;
