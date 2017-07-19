@@ -30,6 +30,7 @@ function Bonus(tranX, tranZ) {
         var x = this.model[0][3], z = this.model[2][3];
         if (Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2)) < Bonus.radius) {
             audioEat.pause();
+            audioEat.currentTime = 0;
             audioEat.play();
             Bonus.points += 1;
             pointsLabel.innerHTML = "Points : " + Bonus.points.toString();
@@ -48,13 +49,13 @@ function Bonus(tranX, tranZ) {
                 z = Math.floor((Math.random() * (World.width - 1))) - (World.width / 2 - 0.5);
             }
             while (Map.matrix[Math.floor(x) + World.height / 2][Math.floor(z) + World.width / 2] !== '0');
-
-            this.model[0][3] = x;
-            this.model[2][3] = z;
             
-            this.spotPosition = vec4 (mult (this.model, vec4 (0.0, 3.0, 0.0, 1.0)));
             Snake.eating = true;
         }
+        
+        this.model[0][3] = x;
+        this.model[2][3] = z;
+        this.spotPosition = vec4 (mult (this.model, vec4 (0.0, 3.0, 0.0, 1.0)));
         Map.matrix[Math.floor(x) + World.height / 2][Math.floor(z) + World.width / 2] = 'b';
     };
 }

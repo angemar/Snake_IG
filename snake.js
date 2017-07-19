@@ -199,6 +199,7 @@ function Snake () {
         col = Math.floor(parts[0].model[2][3])+ World.width / 2;
         if(Map.matrix[row][col] === 's'){ 
             dead=true;
+            return;
         }
         
         Snake.step = (Snake.step + 1) % Snake.slices;

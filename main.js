@@ -226,20 +226,24 @@ var render = function () {
     
     map.draw();
     
-    if(pause){
-        alert("Game in pause! Press OK to play!");
-        pause = false;
-    }else if(winner){
+    if (winner) {
         audioWin.play();
         alert ("Points: "+Bonus.points+"/"+Bonus.winPoints+"\nYOU WIN!\nPress OK to restart the game!");
         winner=false;
         window.location.href="start.html";
-        
-    }else if(dead){
+        return;
+    }
+    if (dead) {
         audioLose.play();
         alert("Points: "+Bonus.points+"/"+Bonus.winPoints+"\nGAME OVER!\nPress OK to restart the game!");
         dead=false;
         window.location.href="start.html";
+        return;
+    }
+    
+    if (pause) {
+        alert("Game in pause! Press OK to play!");
+        pause = false;
     }
     
     requestAnimFrame(render);
