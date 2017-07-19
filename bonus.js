@@ -29,6 +29,7 @@ function Bonus(tranX, tranZ) {
         
         var x = this.model[0][3], z = this.model[2][3];
         if (Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2)) < Bonus.radius) {
+            audioEat.pause();
             audioEat.play();
             Bonus.points += 1;
             pointsLabel.innerHTML = "Points : " + Bonus.points.toString();
